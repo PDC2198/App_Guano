@@ -32,7 +32,7 @@ const SendScreen = () => {
             <View style={styles.headerContainer}>
                 {/* Botón de retroceso */}
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Icon name="arrow-left" size={30} color="#fff" />
+                    <Icon name="menu-open" size={30} color="#fff" />
                 </TouchableOpacity>
                 {/* Título centrado */}
                 <Text style={styles.headerTitle}>Sincronización</Text>

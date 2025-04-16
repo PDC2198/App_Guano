@@ -157,7 +157,7 @@ const ReadingScreen: React.FC = ({ navigation }) => {
       <View style={styles.topBar}>
         {currentSection === 0 && ( // Mostrar botón solo en la sección 1
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Icon name="arrow-left" size={30} color="#fff" />
+            <Icon name="menu-open" size={30} color="#fff" />
           </TouchableOpacity>
         )}
         

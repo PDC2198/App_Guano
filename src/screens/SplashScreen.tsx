@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Button } from 'react-native';
+import {
+    View, Text, StyleSheet, ActivityIndicator,
+    TouchableOpacity, Image, ImageBackground, SafeAreaView, StatusBar
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { initDatabase } from '../database/sqlite';
 
 type RootStackParamList = {
     Splash: undefined;
@@ -12,68 +17,143 @@ type SplashScreenProps = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     const [showButton, setShowButton] = useState(false);
 
-    // Función para formatear la fecha en el formato "03 de enero del 2025"
     const formatDate = (date: Date) => {
-        const days = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-        const months = [
-            "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
-            "septiembre", "octubre", "noviembre", "diciembre"
-        ];
-
-        const day = date.getDate().toString().padStart(2, '0'); // Añadir un 0 si el día es menor a 10
+        const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+            "septiembre", "octubre", "noviembre", "diciembre"];
+        const day = date.getDate().toString().padStart(2, '0');
         const month = months[date.getMonth()];
         const year = date.getFullYear();
-
         return `${day} de ${month} del ${year}`;
     };
 
-    // Obtener la fecha formateada
     const currentDate = formatDate(new Date());
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setShowButton(true); // Muestra el botón después de 4 segundos
+            setShowButton(true);
         }, 4000);
 
         return () => clearTimeout(timer);
     }, []);
 
-    const handleNavigateToLogin = () => {
-        navigation.replace('Login');
-    };
+    useEffect(() => {
+        initDatabase();
+    }, []);
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.companyName}>AGILEDEPLOY</Text>
-            {/* Mostrar la fecha justo debajo del nombre de la empresa */}
-            <Text style={styles.date}>{currentDate}</Text>
-            {!showButton ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-                <Button title="INGRESAR" onPress={handleNavigateToLogin} />
-            )}
-        </View>
+        <SafeAreaView style={styles.safeArea}>
+            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+
+            <ImageBackground
+                source={require('../assets/fondoGuano.jpg')}
+                style={styles.background}
+                imageStyle={{ resizeMode: 'cover' }}
+            >
+                <View style={styles.overlay} />
+
+                <View style={styles.container}>
+                    <Text style={styles.companyName}>
+                        GOBIERNO AUTÓNOMO DESCENTRALIZADO MUNICIPAL DEL CANTÓN GUANO
+                    </Text>
+
+                    <Text style={styles.date}>{currentDate}</Text>
+
+                    {!showButton ? (
+                        <ActivityIndicator size="large" color="#ffffff" style={styles.loader} />
+                    ) : (
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Login')}>
+                            <Icon name="login" size={24} color="#fff" />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                <Image
+                    source={require('../assets/logoGuano.jpg')}
+                    style={styles.logoLeft}
+                    resizeMode="contain"
+                />
+
+                <Image
+                    source={require('../assets/logoAgil.jpg')}
+                    style={styles.logoRight}
+                    resizeMode="contain"
+                />
+            </ImageBackground>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#000',
+    },
+    background: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f8f9fa',
-        flexDirection: 'column',
-
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    container: {
+        width: '90%',
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        borderRadius: 16,
+        paddingVertical: 40,
+        paddingHorizontal: 25,
+        alignItems: 'center',
+        borderColor: '#fff2',
+        borderWidth: 1,
     },
     companyName: {
-        fontSize: 40,
+        fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 15,  // Reduce el espacio entre el nombre y la fecha
+        color: '#fff',
+        textAlign: 'center',
+        marginBottom: 20,
     },
     date: {
-        fontSize: 16,  // Un tamaño de fuente más pequeño que el nombre de la empresa
-        color: '#555',  // Color gris para la fecha
-        marginBottom: 40,  // Espaciado adicional entre la fecha y el botón
+        fontSize: 16,
+        color: '#ccc',
+        marginBottom: 30,
+    },
+    loader: {
+        marginTop: 20,
+    },
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#0066cc',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.4,
+        shadowOffset: { width: 0, height: 5 },
+        shadowRadius: 6,
+        elevation: 6,
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 18,
+        marginRight: 8,
+    },
+    logoLeft: {
+        width: 90,
+        height: 90,
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+    },
+    logoRight: {
+        width: 90,
+        height: 90,
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
     },
 });
 

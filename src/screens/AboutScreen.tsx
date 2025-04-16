@@ -11,7 +11,7 @@ const AboutScreen: React.FC = ({ navigation }) => {
                     style={styles.backButton}
                     onPress={() => navigation.goBack()} // Volver a la pantalla anterior
                 >
-                    <Icon name="arrow-left" size={30} color="#fff" />
+                    <Icon name="menu-open" size={30} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.title}>Acerca de</Text>
             </View>

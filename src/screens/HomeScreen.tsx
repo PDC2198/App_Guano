@@ -34,7 +34,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido a la APP de Lectura de Medidores de Agua</Text>
+      <Text style={styles.title}>APP de Lectura de Medidores de Agua</Text>
 
       <TouchableOpacity
         style={styles.button}
