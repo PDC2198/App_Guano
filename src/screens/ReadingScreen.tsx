@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Asset } from "expo-media-library";
 import {
   View,
   Text,
@@ -14,22 +15,29 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { LecturaFormInput, LecturaT, RootStackParamList } from "../types";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import { LecturaController } from "../controllers/LecturaController";
 import Spinner from "../components/Spinner";
 import Toast from "react-native-toast-message";
 import TakePicture from "../components/TakePicture";
+import { CameraCapturedPicture } from "expo-camera";
 
 type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, "Reading">;
 
 const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
-
   const [selectedRoute, setSelectedRoute] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [routeModalVisible, setRouteModalVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  //Guarda la ubicación de  la foto
+  const [photoGallery, setPhotoGallery] = useState<Asset>();
+  const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>(
+    undefined
+  );
 
   const {
     control,
@@ -64,43 +72,45 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     setCurrentSection(0); // Ir a la sección 1 del formulario
   };
 
-
   const handleSave = async (data: LecturaFormInput) => {
     try {
-      setIsLoading(true)
-      const dataSend : LecturaT = {
+      setIsLoading(true);
+      const dataSend: LecturaT = {
         ...data,
         ruta: "1",
         ordenLectura: +data.ordenLectura,
         lecturaActual: +data.lecturaActual,
         consumo: +data.consumo,
         fecha: date.toString(),
-        foto: "",
-        observacion: ''
-      }
+        foto: photoGallery?.uri || "",
+        observacion: "",
+      };
       console.log("datos: ", dataSend);
-      await LecturaController.addlectura(dataSend)
+
+      await LecturaController.addlectura(dataSend);
       Toast.show({
-        type: 'success',
-        text1: 'Ok',
-        text2: 'Se guardo la lectura'
-      })
-      reset()
+        type: "success",
+        text1: "Ok",
+        text2: "Se guardo la lectura",
+      });
+
+      reset();
+      setPhotoGallery(undefined);
+      setPhoto(undefined);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       Toast.show({
-        type:'error',
-        text1: 'Error',
-        text2: `No se pudo guardar, error: ${error}` 
-      })
+        type: "error",
+        text1: "Error",
+        text2: `No se pudo guardar, error: ${error}`,
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
   const sections = [
     <View key="section1" style={styles.form}>
-     
       {/* Filtros en la parte superior de la sección 1 */}
       <View style={styles.filtersRow}>
         <View style={styles.filter}>
@@ -249,10 +259,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
         </View>
         <View style={styles.inputGroupRow}>
-          <Text style={styles.inputLabel}>Promedio consumo (m³):</Text>
+          <Text style={styles.greenLabel}>Promedio consumo (m³):</Text>
           <TextInput
             placeholder="Promedio del consumo"
-            style={styles.input}
+            style={styles.greenInput}
             keyboardType="numeric"
           />
         </View>
@@ -327,7 +337,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     </View>,
   ];
 
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.topBar}>
@@ -364,22 +373,25 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         )}
 
-<TakePicture />
         {currentSection === 0 && (
           <View style={styles.actionButtons}>
-            <TouchableOpacity style={[styles.arrowButton, styles.photoButton]}>
-              <Text style={styles.arrowText}>TOMAR FOTO</Text>
-            </TouchableOpacity>
+            <TakePicture
+              setPhotoGallery={setPhotoGallery}
+              setPhoto={setPhoto}
+              photo={photo}
+              photoGallery={photoGallery}
+            />
+
             <TouchableOpacity
               style={[styles.arrowButton, styles.saveButton]}
               onPress={handleSubmit(handleSave)}
               disabled={isLoading}
             >
-              { isLoading ?(
-                <Spinner />)
-                :
-                (<Text style={styles.arrowText}>TERMINAR</Text>)
-              }
+              {isLoading ? (
+                <Spinner />
+              ) : (
+                <Text style={styles.arrowText}>TERMINAR</Text>
+              )}
             </TouchableOpacity>
           </View>
         )}
@@ -539,6 +551,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
   },
+  greenLabel: {
+    color: "#28a745",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 5,
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -581,6 +599,7 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   photoButton: {
     backgroundColor: "#34495e",

@@ -1,13 +1,44 @@
-import { useState, useRef } from "react";
-import { TouchableOpacity, Text, StyleSheet, View, Modal, Image } from "react-native";
-import { CameraView, CameraType, useCameraPermissions, CameraCapturedPicture } from "expo-camera";
+import { useState, useRef, Dispatch, SetStateAction } from "react";
+import * as MediaLibrary from "expo-media-library";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  View,
+  Modal,
+  Image,
+  Alert,
+} from "react-native";
+import {
+  CameraView,
+  CameraType,
+  useCameraPermissions,
+  CameraCapturedPicture,
+} from "expo-camera";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-export default function TakePicture() {
+type TakePictureProps = {
+  setPhoto: Dispatch<SetStateAction<CameraCapturedPicture | undefined>>
+  photo: CameraCapturedPicture | undefined
+  setPhotoGallery: React.Dispatch<React.SetStateAction<MediaLibrary.Asset | undefined>>
+  photoGallery: MediaLibrary.Asset | undefined
+}
+
+export default function TakePicture({
+  setPhotoGallery,
+  photo,
+  setPhoto,
+  photoGallery
+}: TakePictureProps) {
+  //Permisos
+  const [permission, requestPermission] = useCameraPermissions(); //Camara
+  const [galleryPermission, requestGalleryPermission] =
+    MediaLibrary.usePermissions(); //Galería
+
   const [facing, setFacing] = useState<CameraType>("back");
-  const [permission, requestPermission] = useCameraPermissions();
   const [isCameraVisible, setIsCameraVisible] = useState(false);
-  const [photo, setPhoto] = useState<CameraCapturedPicture | null>(null);
   const cameraRef = useRef<CameraView>(null);
+
 
   if (!permission) {
     return <View />;
@@ -16,8 +47,13 @@ export default function TakePicture() {
   if (!permission.granted) {
     return (
       <View style={styles.permissionContainer}>
-        <Text style={styles.message}>Activa el permiso para usar la cámara</Text>
-        <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+        <Text style={styles.message}>
+          Activa el permiso para usar la cámara
+        </Text>
+        <TouchableOpacity
+          style={styles.permissionButton}
+          onPress={requestPermission}
+        >
           <Text style={styles.permissionButtonText}>Permitir Cámara</Text>
         </TouchableOpacity>
       </View>
@@ -31,23 +67,64 @@ export default function TakePicture() {
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
+        // Verifica permiso antes de guardar
+        if (!galleryPermission?.granted) {
+          const { granted } = await requestGalleryPermission();
+          if (!granted) {
+            Alert.alert(
+              "Permiso denegado",
+              "No se puede guardar la foto sin permiso a la galería."
+            );
+            return;
+          }
+        }
+
         const photo = await cameraRef.current.takePictureAsync();
         setPhoto(photo);
-        setIsCameraVisible(false); // Cierra la cámara después de tomar la foto
+
+        // Guarda la imagen en la galería
+        const media = await MediaLibrary.createAssetAsync(photo!.uri);
+        setPhotoGallery(media)
       } catch (error) {
         console.error("Error al tomar la foto:", error);
+        Alert.alert("Error", "No se pudo tomar la foto.");
       }
+    }
+  };
+
+  const deleteSavedPhoto = async () => {
+    if (!photoGallery) {
+      Alert.alert("Error", "No hay ninguna foto guardada para borrar.");
+      return;
+    }
+
+    try {
+      const deleted = await MediaLibrary.deleteAssetsAsync([photoGallery.id]);
+      if (deleted) {
+        Alert.alert("Éxito", "La foto ha sido eliminada de la galería.");
+        setPhoto(undefined);
+        setPhotoGallery(undefined)
+      }
+    } catch (error) {
+      console.error("Error al eliminar la foto:", error);
+      Alert.alert("Error", "Ocurrió un problema al intentar eliminar la foto.");
     }
   };
 
   return (
     <>
       {/* Botón para abrir la cámara */}
-      <TouchableOpacity 
-        style={styles.takePhotoButton} 
+      <TouchableOpacity
+        style={[styles.photoButton, styles.arrowButton ]}
         onPress={() => setIsCameraVisible(true)}
       >
-        <Text style={styles.takePhotoButtonText}>TOMAR FOTO</Text>
+        <Text style={styles.arrowText}>TOMAR FOTO</Text> 
+        {
+          photoGallery && (
+            <Icon name="check-underline" size={25} color={"white"} />
+          )
+        }
+
       </TouchableOpacity>
 
       {/* Modal con la cámara full screen */}
@@ -57,47 +134,67 @@ export default function TakePicture() {
         animationType="slide"
       >
         <View style={styles.fullScreenContainer}>
-          <CameraView 
-            ref={cameraRef}
-            facing={facing} 
-            style={styles.fullScreenCamera}
-          >
-            <View style={styles.cameraControls}>
-              <TouchableOpacity 
-                style={styles.flipButton} 
-                onPress={toggleCameraFacing}
+          {!photo ? (
+            <CameraView
+              ref={cameraRef}
+              facing={facing}
+              style={styles.fullScreenCamera}
+            >
+              <View style={styles.cameraControls}>
+                <TouchableOpacity
+                  style={styles.flipButton}
+                  onPress={toggleCameraFacing}
+                >
+                  <Icon name="camera-flip" size={30} color={"white"} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.captureButton}
+                  onPress={takePicture}
+                >
+                  <View style={styles.captureButtonInner} />
+                </TouchableOpacity>
+              </View>
+            </CameraView>
+          ) : (
+            <View style={[styles.photoPreview, styles.fullScreenCamera]}>
+              {/* Vista previa de la foto */}
+              <Image
+                source={{ uri: photo.uri }}
+                style={styles.photoImage}
+                resizeMode="contain"
+              />
+            </View>
+          )}
+
+          <View style={{
+            position: "absolute",
+            top: 0,
+            width: "100%"
+          }}>
+            <View style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: "flex-end"
+            }}>
+              <TouchableOpacity
+
+                onPress={() => deleteSavedPhoto()}
               >
-                <Text style={styles.flipText}>Flip Camera</Text>
+                 <Icon name="trash-can" size={30} color={"#c10007"} />
               </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.captureButton} 
-                onPress={takePicture}
+
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsCameraVisible(false)}
               >
-                <View style={styles.captureButtonInner} />
+                <Icon name="close" size={30} color={"white"} />
               </TouchableOpacity>
             </View>
-          </CameraView>
-
-          <TouchableOpacity 
-            style={styles.closeButton} 
-            onPress={() => setIsCameraVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>Cerrar</Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </Modal>
-
-      {/* Vista previa de la foto */}
-      {photo && (
-        <View style={styles.photoPreview}>
-          <Image 
-            source={{ uri: photo.uri }} 
-            style={styles.photoImage}
-            resizeMode="contain"
-          />
-        </View>
-      )}
     </>
   );
 }
@@ -105,101 +202,117 @@ export default function TakePicture() {
 const styles = StyleSheet.create({
   // Estilos para el botón de abrir cámara
   takePhotoButton: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    backgroundColor: "#007BFF",
+    paddingVertical: 16,
     borderRadius: 25,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 20,
+    color: "#FFFFFF",
   },
-  takePhotoButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  arrowButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    marginTop: 20,
+    alignSelf: "flex-end",
+    flexDirection: "row",
+  },
+  photoButton: {
+    backgroundColor: "#34495e",
+    marginRight: 10,
+    paddingVertical: 16,
+    alignItems: "center",
+    borderRadius: 20,
+    flex: 1,
+    justifyContent: "center",
+  },
+  arrowText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 
   // Estilos para la cámara full screen
   fullScreenContainer: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   fullScreenCamera: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   cameraControls: {
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   flipButton: {
     padding: 10,
   },
   flipText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
   captureButton: {
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
     borderWidth: 3,
-    borderColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
   },
   captureButtonInner: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   closeButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 10,
     borderRadius: 5,
+    margin: 10,
   },
+  
   closeButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
 
   // Estilos para permisos
   permissionContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   message: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
     fontSize: 16,
   },
   permissionButton: {
-    backgroundColor: '#007BFF',
+    backgroundColor: "#007BFF",
     padding: 15,
     borderRadius: 5,
   },
   permissionButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
 
   // Estilos para vista previa de foto
   photoPreview: {
     margin: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   photoImage: {
-    width: 300,
-    height: 300,
+    width: "100%",
+    height: "100%",
     borderRadius: 10,
   },
 });
