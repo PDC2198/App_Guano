@@ -1,11 +1,15 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
-    View, Text, StyleSheet, ActivityIndicator,
-    TouchableOpacity, Image, ImageBackground, SafeAreaView, StatusBar
+    Image, ImageBackground, SafeAreaView, StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { initDatabase } from '../database/sqlite';
+import Spinner from '../components/Spinner';
+import { initDatabase } from '../models/LecturoModel';
 
 type RootStackParamList = {
     Splash: undefined;
@@ -59,7 +63,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
                     <Text style={styles.date}>{currentDate}</Text>
 
                     {!showButton ? (
-                        <ActivityIndicator size="large" color="#ffffff" style={styles.loader} />
+                        <Spinner />
                     ) : (
                         <TouchableOpacity style={styles.button} onPress={() => navigation.replace('Login')}>
                             <Icon name="login" size={24} color="#fff" />
