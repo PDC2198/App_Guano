@@ -77,7 +77,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       setIsLoading(true);
       const dataSend: LecturaT = {
         ...data,
-        ruta: "1",
+        ruta: "1", //Por defecto
         ordenLectura: +data.ordenLectura,
         lecturaActual: +data.lecturaActual,
         consumo: +data.consumo,
@@ -223,7 +223,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
         </View>
         <View style={styles.inputGroupRow}>
-          <Text style={styles.inputLabel}>Lectura actual (m³):</Text>
+          <Text style={styles.greenLabel}>Lectura actual (m³):</Text>
 
           <Controller
             control={control}
@@ -231,7 +231,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 placeholder="Lectura actual"
-                style={styles.input}
+                style={styles.greenInput}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
@@ -259,10 +259,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
         </View>
         <View style={styles.inputGroupRow}>
-          <Text style={styles.greenLabel}>Promedio consumo (m³):</Text>
+          <Text style={styles.inputLabel}>Promedio consumo (m³):</Text>
           <TextInput
             placeholder="Promedio del consumo"
-            style={styles.greenInput}
+            style={styles.input}
             keyboardType="numeric"
           />
         </View>

@@ -10,6 +10,7 @@ export type LecturaT = {
   
 }
 
+//Formulario de lectura
 export type LecturaFormInput = {
   ruta: string;
   ordenLectura: string;
@@ -19,7 +20,7 @@ export type LecturaFormInput = {
   observacion?: string;
 }
 
-
+//Type de rutas
 export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
@@ -27,4 +28,26 @@ export type RootStackParamList = {
   Reading: undefined;
   About: undefined;
   Send: undefined;
+};
+
+//Params de rutas
+export type ParamsLectura = {
+  ruta?: string, 
+  estado?: boolean
+}
+
+//Lecturas getAll
+export type LecturaRecord = {
+  consumo: string;
+  createdAt: string; 
+  estado: number;
+  fecha: string; 
+  foto: string | null; 
+  id: number;
+  lecturaActual: number;
+  numeroCuenta: number;
+  observacion: string | null;
+  ordenLectura: number;
+  ruta: string;
+  updatedAt: string;
 };

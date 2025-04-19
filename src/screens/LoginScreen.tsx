@@ -8,7 +8,6 @@ import {
   Alert,
   ImageBackground,
   SafeAreaView,
-  StatusBar,
   Image,
   Animated,
 } from 'react-native';
@@ -43,7 +42,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
       <ImageBackground
         source={require('../assets/fondoGuano.jpg')}

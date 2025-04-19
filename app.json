@@ -1,14 +1,11 @@
 {
   "expo": {
     "name": "primer-app",
-    "slug": "primer-app",
+    "slug": "appguano",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "permissions": [
-      "CAMERA"
-    ],
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -22,13 +19,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ist14.appguano"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-sqlite"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "82b57131-8567-4112-bfc5-9c6d8ace45f0"
+      }
+    },
+    "owner": "ist14"
   }
 }

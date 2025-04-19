@@ -1,8 +1,12 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { RootStackParamList } from '../types';
 
-const AboutScreen: React.FC = ({ navigation }) => {
+type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+const AboutScreen:  React.FC<HomeScreenProps> = ({ navigation }) => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             {/* Contenedor del botón Atrás y el título */}

@@ -1,20 +1,20 @@
-import { useState, useRef, Dispatch, SetStateAction } from "react";
-import * as MediaLibrary from "expo-media-library";
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-  Modal,
-  Image,
-  Alert,
-} from "react-native";
-import {
-  CameraView,
-  CameraType,
-  useCameraPermissions,
   CameraCapturedPicture,
+  CameraType,
+  CameraView,
+  useCameraPermissions,
 } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
+import {
+  Alert,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type TakePictureProps = {
@@ -28,7 +28,8 @@ export default function TakePicture({
   setPhotoGallery,
   photo,
   setPhoto,
-  photoGallery
+  photoGallery,
+  
 }: TakePictureProps) {
   //Permisos
   const [permission, requestPermission] = useCameraPermissions(); //Camara
@@ -64,6 +65,7 @@ export default function TakePicture({
     setFacing((current) => (current === "back" ? "front" : "back"));
   };
 
+  //Tomar foto y guardar en galería
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
@@ -92,6 +94,7 @@ export default function TakePicture({
     }
   };
 
+  //Eliminar foto
   const deleteSavedPhoto = async () => {
     if (!photoGallery) {
       Alert.alert("Error", "No hay ninguna foto guardada para borrar.");
@@ -134,6 +137,7 @@ export default function TakePicture({
         animationType="slide"
       >
         <View style={styles.fullScreenContainer}>
+  
           {!photo ? (
             <CameraView
               ref={cameraRef}
@@ -292,17 +296,22 @@ const styles = StyleSheet.create({
   },
   message: {
     textAlign: "center",
-    marginBottom: 20,
-    fontSize: 16,
+    marginBottom: 10,
+    fontSize: 12,
+    color: "#e7000b",
+    backgroundColor: "#ffe2e2",
+    padding: 10,
+    borderRadius: 5
   },
   permissionButton: {
     backgroundColor: "#007BFF",
-    padding: 15,
+    padding: 10,
     borderRadius: 5,
+    width: "100%"
   },
   permissionButtonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 16
   },
 
   // Estilos para vista previa de foto
@@ -313,6 +322,5 @@ const styles = StyleSheet.create({
   photoImage: {
     width: "100%",
     height: "100%",
-    borderRadius: 10,
   },
 });
