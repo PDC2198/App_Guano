@@ -79,6 +79,21 @@ const SendScreen = () => {
           <Text style={styles.headerTitle}>Sincronización</Text>
         </View>
 
+        <View style={{
+          display: "flex",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <TouchableOpacity 
+            style={styles.buttonExport}
+            onPress={() => LecturaController.exportDatabase()}
+          >
+            <Text style={styles.textExport}>Exportar DB</Text>
+             <Icon name="download" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
         {/* Contenedor principal */}
         <View style={styles.contentContainer}>
           {/* Filtros */}
@@ -160,10 +175,11 @@ const SendScreen = () => {
                   >
                     <Text style={styles.photoText}>
                       {" "}
-                      {item.foto ? 
-                        "📷" : 
-                        <Icon name="image-off" size={15} color={"white"}  />
-                      }{" "}
+                      {item.foto ? (
+                        "📷"
+                      ) : (
+                        <Icon name="image-off" size={15} color={"white"} />
+                      )}{" "}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -206,19 +222,21 @@ const SendScreen = () => {
         </View>
 
         {/* Botón ENVIAR */}
-        <View style={{
+        <View
+          style={{
             display: "flex",
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 20
-        }}>
-            <TouchableOpacity
+            marginTop: 20,
+          }}
+        >
+          <TouchableOpacity
             style={styles.sendButton}
             onPress={() => alert("Datos enviados con éxito")}
-            >
+          >
             <Text style={styles.sendButtonText}>ENVIAR</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -365,7 +383,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     elevation: 5,
-    width: "50%"
+    width: "50%",
   },
   sendButtonText: {
     color: "#fff",
@@ -419,6 +437,22 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
+  buttonExport : {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: "#62748e",
+    width: "50%",
+    borderRadius: 10,
+    display: "flex",
+    flexDirection: "row",
+    gap: 5,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  textExport: {
+    textAlign: "center",
+    color: "#FFFFFF"
+  }
 });
 
 export default SendScreen;

@@ -1,18 +1,17 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
   Alert,
+  Image,
   ImageBackground,
   SafeAreaView,
-  Image,
-  Animated,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   Login: undefined;
