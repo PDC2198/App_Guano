@@ -1,26 +1,27 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { CameraCapturedPicture } from "expo-camera";
 import { Asset } from "expo-media-library";
+import { Controller, useForm } from "react-hook-form";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Alert,
   Modal,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { LecturaFormInput, LecturaT, RootStackParamList } from "../types";
-import { useForm, Controller, set } from "react-hook-form";
-import { LecturaController } from "../controllers/LecturaController";
-import Spinner from "../components/Spinner";
 import Toast from "react-native-toast-message";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import ErrorMessage from "../components/ErrorMessage";
+import Spinner from "../components/Spinner";
 import TakePicture from "../components/TakePicture";
-import { CameraCapturedPicture } from "expo-camera";
+import { LecturaController } from "../controllers/LecturaController";
+import { LecturaFormInput, LecturaT, RootStackParamList, Rutas } from "../types";
+import { rutas } from "../data/rutas";
 
 type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, "Reading">;
 
@@ -44,6 +45,8 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     handleSubmit,
     reset,
     formState: { errors },
+    watch,
+    setValue
   } = useForm<LecturaFormInput>({
     defaultValues: {
       ruta: "",
@@ -52,9 +55,13 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       lecturaActual: "",
       consumo: "",
       observacion: "",
+      lecturaInicial: ""
     },
   });
 
+  const lecturaActual = watch("lecturaActual");
+  const lecturaInicial = watch("lecturaInicial")
+  
   const routes = ["Ruta 1", "Ruta 2", "Ruta 3", "Ruta 4"];
 
   const onChangeDate = (_event: any, selectedDate?: Date) => {
@@ -67,7 +74,12 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     setRouteModalVisible(true); // Mostrar modal con el nombre de la ruta
   };
 
-  const handleNavigateToSection1 = () => {
+  const handleNavigateToSection1 = (ruta: Rutas) => {
+    console.log(ruta);
+    setValue("lecturaInicial", ruta.lectura)
+    setValue("ordenLectura", ruta.orden.toString())
+    setValue("numeroCuenta", ruta.cuenta)
+    
     setRouteModalVisible(false); // Cerrar el modal
     setCurrentSection(0); // Ir a la sección 1 del formulario
   };
@@ -76,7 +88,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     try {
       setIsLoading(true);
       const dataSend: LecturaT = {
-        ...data,
+        numeroCuenta: data.numeroCuenta,
         ruta: "1", //Por defecto
         ordenLectura: +data.ordenLectura,
         lecturaActual: +data.lecturaActual,
@@ -108,6 +120,15 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       setIsLoading(false);
     }
   };
+
+  //UseEffect para calcular el consumo
+  useEffect(() => {
+
+    if(lecturaActual && lecturaInicial) {
+      const resultado = +lecturaActual - +lecturaInicial 
+      setValue("consumo", resultado.toFixed(2))
+    }
+  }, [lecturaActual, lecturaInicial])
 
   const sections = [
     <View key="section1" style={styles.form}>
@@ -155,9 +176,12 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           <Controller
             control={control}
             name="ordenLectura"
+            rules={{
+              required: "Seleccione una ruta.",
+            }}
             render={({ field: { onChange, value } }) => (
               <TextInput
-                placeholder="Órden de la lectura"
+                placeholder="Ordén de la lectura"
                 style={styles.input}
                 keyboardType="numeric"
                 value={value}
@@ -165,12 +189,19 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
               />
             )}
           />
+
+          {errors?.ordenLectura?.message && (
+            <ErrorMessage message={errors.ordenLectura.message} />
+          )}
         </View>
         <View style={styles.inputGroupRow}>
           <Text style={styles.inputLabel}>Número de cuenta:</Text>
           <Controller
             control={control}
             name="numeroCuenta"
+            rules={{
+              required: "Seleccione una ruta.",
+            }}
             render={({ field: { onChange, value } }) => (
               <TextInput
                 placeholder="Número de cuenta"
@@ -181,6 +212,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
               />
             )}
           />
+
+          {errors?.numeroCuenta?.message && (
+            <ErrorMessage message={errors.numeroCuenta.message} />
+          )}
         </View>
       </View>
       <View style={styles.rowGroup}>
@@ -216,10 +251,19 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       <View style={styles.rowGroup}>
         <View style={styles.inputGroupRow}>
           <Text style={styles.inputLabel}>Lectura inicial (m³):</Text>
-          <TextInput
-            placeholder="Lectura inicial"
-            style={styles.input}
-            keyboardType="numeric"
+
+          <Controller
+            control={control}
+            name="lecturaInicial"
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+              placeholder="Lectura inicial"
+              style={styles.input}
+              keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
           />
         </View>
         <View style={styles.inputGroupRow}>
@@ -228,6 +272,9 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           <Controller
             control={control}
             name="lecturaActual"
+            rules={{
+              required: "Seleccione una ruta.",
+            }}
             render={({ field: { onChange, value } }) => (
               <TextInput
                 placeholder="Lectura actual"
@@ -238,6 +285,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
               />
             )}
           />
+
+          {errors?.lecturaActual?.message && (
+            <ErrorMessage message={errors.lecturaActual.message} />
+          )}
         </View>
       </View>
       <View style={styles.rowGroup}>
@@ -250,10 +301,12 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 placeholder="Consumo"
-                style={styles.input}
+                style={styles.inputDisabled}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
+                editable={false}
+
               />
             )}
           />
@@ -427,62 +480,24 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
                 <Text style={styles.tableHeaderCell}>OPCIÓN</Text>
               </View>
 
+
+
               {/* Filas de datos */}
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell1}> 1 </Text>
-                <Text style={styles.tableCell}>060750-001000-002000 </Text>
-                <Text style={styles.tableCell}>123</Text>
-                <TouchableOpacity
-                  style={styles.optionButton}
-                  onPress={handleNavigateToSection1}
-                >
-                  <Text style={styles.optionButtonText}>Ir</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell1}> 2 </Text>
-                <Text style={styles.tableCell}>060750-001000-002001</Text>
-                <Text style={styles.tableCell}>01258</Text>
-                <TouchableOpacity
-                  style={styles.optionButton}
-                  onPress={handleNavigateToSection1}
-                >
-                  <Text style={styles.optionButtonText}>Ir</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell1}> 3 </Text>
-                <Text style={styles.tableCell}>060750-001000-002002</Text>
-                <Text style={styles.tableCell}>0</Text>
-                <TouchableOpacity
-                  style={styles.optionButton}
-                  onPress={handleNavigateToSection1}
-                >
-                  <Text style={styles.optionButtonText}>Ir</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell1}> 4 </Text>
-                <Text style={styles.tableCell}>060750-001000-002003</Text>
-                <Text style={styles.tableCell}>15689</Text>
-                <TouchableOpacity
-                  style={styles.optionButton}
-                  onPress={handleNavigateToSection1}
-                >
-                  <Text style={styles.optionButtonText}>Ir</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell1}> 5 </Text>
-                <Text style={styles.tableCell}>060750-001000-002000</Text>
-                <Text style={styles.tableCell}>0</Text>
-                <TouchableOpacity
-                  style={styles.optionButton}
-                  onPress={handleNavigateToSection1}
-                >
-                  <Text style={styles.optionButtonText}>Ir</Text>
-                </TouchableOpacity>
-              </View>
+              { rutas.map((ruta, index) => (
+                <View style={styles.tableRow} key={index}>
+                  <Text style={styles.tableCell1}> { ruta.orden}  </Text>
+                  <Text style={styles.tableCell}> { ruta.cuenta} </Text>
+                  <Text style={styles.tableCell}> { ruta.lectura} </Text>
+                  <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={() => handleNavigateToSection1(ruta)}
+                  >
+                    <Text style={styles.optionButtonText}>Ir</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+
+
             </View>
             <TouchableOpacity
               style={styles.modalButton}
@@ -563,6 +578,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     backgroundColor: "#fff",
+  },
+  inputDisabled: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    opacity: 0.5
   },
   filtersRow: {
     flexDirection: "row",

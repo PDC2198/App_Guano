@@ -18,6 +18,7 @@ export type LecturaFormInput = {
   lecturaActual: string;
   consumo: string;
   observacion?: string;
+  lecturaInicial: string
 }
 
 //Type de rutas
@@ -51,3 +52,11 @@ export type LecturaRecord = {
   ruta: string;
   updatedAt: string;
 };
+
+
+//Type para rutas
+export type Rutas =     {
+  orden: number,
+  cuenta: string,
+  lectura: string,
+}
