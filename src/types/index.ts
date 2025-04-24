@@ -17,7 +17,6 @@ export type LecturaFormInput = {
   numeroCuenta: string;
   lecturaActual: string;
   consumo: string;
-  observacion?: string;
   lecturaInicial: string
 }
 

@@ -96,8 +96,8 @@ export const getLectura = async ({ ruta, estado} : ParamsLectura) => {
       query += ` WHERE ` + conditions.join(' AND ');
     }
 
-    // Ordenamos por fecha
-    query += ` ORDER BY createdAt DESC`;
+    // Ordenamos por ruta
+    query += ` ORDER BY ruta DESC`;
 
     const lecturas = await db.getAllAsync<LecturaRecord>(query, params);
     return lecturas

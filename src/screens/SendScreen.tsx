@@ -59,8 +59,9 @@ const SendScreen = () => {
     setUriPhoto("");
   };
 
+
   useEffect(() => {
-    getLecturas({});
+    getLecturas({})
   }, []);
 
   return (

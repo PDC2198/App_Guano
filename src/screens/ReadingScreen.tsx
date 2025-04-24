@@ -4,7 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CameraCapturedPicture } from "expo-camera";
 import { Asset } from "expo-media-library";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, set, useForm } from "react-hook-form";
 import {
   Modal,
   ScrollView,
@@ -31,7 +31,8 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [routeModalVisible, setRouteModalVisible] = useState(false);
-
+  const [observacion, setObservacion] = useState("")
+ 
   const [isLoading, setIsLoading] = useState(false);
 
   //Guarda la ubicación de  la foto
@@ -54,7 +55,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       numeroCuenta: "",
       lecturaActual: "",
       consumo: "",
-      observacion: "",
       lecturaInicial: ""
     },
   });
@@ -75,7 +75,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
   };
 
   const handleNavigateToSection1 = (ruta: Rutas) => {
-    console.log(ruta);
     setValue("lecturaInicial", ruta.lectura)
     setValue("ordenLectura", ruta.orden.toString())
     setValue("numeroCuenta", ruta.cuenta)
@@ -95,8 +94,9 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         consumo: +data.consumo,
         fecha: date.toString(),
         foto: photoGallery?.uri || "",
-        observacion: "",
+        observacion: observacion
       };
+
       console.log("datos: ", dataSend);
 
       await LecturaController.addlectura(dataSend);
@@ -106,7 +106,8 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         text2: "Se guardo la lectura",
       });
 
-      reset();
+      reset(); //Resetear formulario
+      setObservacion('') //Resetear
       setPhotoGallery(undefined);
       setPhoto(undefined);
     } catch (error) {
@@ -345,10 +346,13 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         <Text style={styles.inputLabel}>Tipo lectura:</Text>
         <TextInput placeholder="Tipo de lectura" style={styles.input} />
       </View>
+
       <View style={styles.inputGroup}>
         <Text style={styles.inputLabel}>Observación:</Text>
         <TextInput
           placeholder="Escribe una observación"
+          value={observacion}
+          onChangeText={setObservacion}
           style={[styles.input, { height: 70, textAlignVertical: "top" }]}
           multiline
         />
