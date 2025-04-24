@@ -1,23 +1,22 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
   Alert,
+  Image,
   ImageBackground,
   SafeAreaView,
-  StatusBar,
-  Image,
-  Animated,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   Login: undefined;
   Home: undefined;
+  Splash: undefined;
 };
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
@@ -43,13 +42,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
       <ImageBackground
         source={require('../assets/fondoGuano.jpg')}
         style={styles.background}
         imageStyle={{ resizeMode: 'cover' }}
       >
+        <TouchableOpacity
+          style={styles.homeButton}
+          onPress={() => navigation.replace('Splash')}
+        >
+          <Icon name="home" size={30} color="#fff" />
+        </TouchableOpacity>
+
+
         <View style={styles.overlay} />
 
         <View style={styles.container}>
@@ -196,6 +202,16 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 20,
   },
+  homeButton: {
+    position: 'absolute', // Esto lo coloca en una posición fija.
+    top: 40, // Distancia desde el borde superior.
+    left: 20, // Distancia desde el borde izquierdo.
+    backgroundColor: 'rgba(57, 53, 53, 0.6)', // Fondo translúcido para el botón.
+    padding: 10,
+    borderRadius: 50, // Lo hace redondeado.
+    zIndex: 10, // Asegura que esté encima de otros elementos.
+  },
+
 });
 
 export default LoginScreen;
