@@ -7,6 +7,8 @@ import {
   Alert,
   BackHandler,
   Dimensions,
+  Pressable,
+  ImageBackground,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -29,9 +31,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       { text: 'Cancelar', style: 'cancel' },
       {
         text: 'Sí',
-        onPress: () => {
-          navigation.replace('Login');
-        },
+        onPress: () => navigation.replace('Login'),
       },
     ]);
   };
@@ -43,66 +43,135 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     ]);
   };
 
-  const menuItems = [
-    { label: 'TOMA DE LECTURA', icon: 'clipboard-text-outline', color: '#2196F3', action: () => navigation.navigate('Reading') },
-    { label: 'SINCRONIZAR APP', icon: 'cloud-upload-outline', color: '#4CAF50', action: () => navigation.navigate('Send') },
-    { label: 'ACERCA DE', icon: 'information-outline', color: '#FF9800', action: () => navigation.navigate('About') },
-    { label: 'CERRAR SESIÓN', icon: 'logout', color: '#F44336', action: handleLogout },
-    { label: 'SALIR', icon: 'exit-to-app', color: '#9C27B0', action: handleExit },
-  ];
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Lectura de Medidores</Text>
-      <View style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.card} onPress={item.action} activeOpacity={0.8}>
-            <Icon name={item.icon} size={34} color={item.color} />
-            <Text style={styles.cardText}>{item.label}</Text>
-          </TouchableOpacity>
-        ))}
+    <ImageBackground
+      source={require('../assets/fondoX.jpg')} 
+      style={styles.container}
+      imageStyle={styles.backgroundImage}
+    >
+      <Text style={styles.title}>App de toma de lecturas de agua potable</Text>
+
+      <View style={styles.importantButtons}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.mainCard,
+            { backgroundColor: '#1D4ED8' },
+            pressed && styles.pressed,
+          ]}
+          onPress={() => navigation.navigate('Reading')}
+        >
+          <Icon name="clipboard-text-outline" size={44} color="#fff" />
+          <Text style={styles.mainText}>TOMA DE LECTURA</Text>
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.mainCard,
+            { backgroundColor: '#047857' },
+            pressed && styles.pressed,
+          ]}
+          onPress={() => navigation.navigate('Send')}
+        >
+          <Icon name="cloud-upload-outline" size={44} color="#fff" />
+          <Text style={styles.mainText}>SINCRONIZAR APP</Text>
+        </Pressable>
       </View>
-    </View>
+
+      <View style={styles.secondaryButtons}>
+        <TouchableOpacity
+          style={styles.secondaryCard}
+          onPress={() => navigation.navigate('About')}
+        >
+          <Icon name="information-outline" size={28} color="#F59E0B" />
+          <Text style={styles.secondaryText}>ACERCA DE</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.secondaryCard} onPress={handleLogout}>
+          <Icon name="logout" size={28} color="#EF4444" />
+          <Text style={styles.secondaryText}>CERRAR SESIÓN</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.secondaryCard} onPress={handleExit}>
+          <Icon name="exit-to-app" size={28} color="#8B5CF6" />
+          <Text style={styles.secondaryText}>SALIR</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-    paddingTop: 60,
     paddingHorizontal: 20,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 30,
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover', // Esto asegura que la imagen cubra toda la pantalla
+    justifyContent: 'center',
   },
-  menuContainer: {
+  title: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#000',
+    marginBottom: 36,
+    textAlign: 'center',
+    //textShadowColor: '#000',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 10,
+  },
+  importantButtons: {
+    width: '100%',
+    gap: 15,
+    marginBottom: 36,
+  },
+  mainCard: {
+    width: '100%',
+    borderRadius: 25,
+    paddingVertical: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  pressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  mainText: {
+    marginTop: 12,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#fff',
+    letterSpacing: 0.5,
+  },
+  secondaryButtons: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     width: '100%',
   },
-  card: {
-    width: width * 0.44,
-    backgroundColor: '#FFFFFF',
+  secondaryCard: {
+    width: width * 0.3,
+    backgroundColor: '#fff',
     borderRadius: 20,
-    paddingVertical: 30,
-    marginBottom: 20,
+    paddingVertical: 25,
+    marginBottom: 15,
     alignItems: 'center',
-    justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
+    elevation: 4,
   },
-  cardText: {
-    marginTop: 12,
-    fontSize: 15,
+  secondaryText: {
+    marginTop: 8,
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
     color: '#334155',

@@ -35,7 +35,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             setShowButton(true);
-        }, 3000);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);
@@ -99,11 +99,11 @@ const styles = StyleSheet.create({
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.42)',
     },
     container: {
         width: '90%',
-        backgroundColor: 'rgba(255,255,255,0.06)',
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
         borderRadius: 16,
         paddingVertical: 40,
         paddingHorizontal: 25,

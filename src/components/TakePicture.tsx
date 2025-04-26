@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   arrowButton: {
-    paddingVertical: 10,
+    paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 20,
     alignItems: "center",
@@ -234,6 +234,7 @@ const styles = StyleSheet.create({
   arrowText: {
     color: "#fff",
     fontWeight: "bold",
+    
   },
 
   // Estilos para la cámara full screen

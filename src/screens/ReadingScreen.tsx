@@ -32,7 +32,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
   const [currentSection, setCurrentSection] = useState(0);
   const [routeModalVisible, setRouteModalVisible] = useState(false);
   const [observacion, setObservacion] = useState("")
- 
+
   const [isLoading, setIsLoading] = useState(false);
 
   //Guarda la ubicación de  la foto
@@ -61,7 +61,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
 
   const lecturaActual = watch("lecturaActual");
   const lecturaInicial = watch("lecturaInicial")
-  
+
   const routes = ["Ruta 1", "Ruta 2", "Ruta 3", "Ruta 4"];
 
   const onChangeDate = (_event: any, selectedDate?: Date) => {
@@ -78,7 +78,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     setValue("lecturaInicial", ruta.lectura)
     setValue("ordenLectura", ruta.orden.toString())
     setValue("numeroCuenta", ruta.cuenta)
-    
+
     setRouteModalVisible(false); // Cerrar el modal
     setCurrentSection(0); // Ir a la sección 1 del formulario
   };
@@ -125,8 +125,8 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
   //UseEffect para calcular el consumo
   useEffect(() => {
 
-    if(lecturaActual && lecturaInicial) {
-      const resultado = +lecturaActual - +lecturaInicial 
+    if (lecturaActual && lecturaInicial) {
+      const resultado = +lecturaActual - +lecturaInicial
       setValue("consumo", resultado.toFixed(2))
     }
   }, [lecturaActual, lecturaInicial])
@@ -258,9 +258,9 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
             name="lecturaInicial"
             render={({ field: { onChange, value } }) => (
               <TextInput
-              placeholder="Lectura inicial"
-              style={styles.input}
-              keyboardType="numeric"
+                placeholder="Lectura inicial"
+                style={styles.input}
+                keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
               />
@@ -269,7 +269,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         </View>
         <View style={styles.inputGroupRow}>
           <Text style={styles.greenLabel}>Lectura actual (m³):</Text>
-
           <Controller
             control={control}
             name="lecturaActual"
@@ -356,10 +355,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           style={[styles.input, { height: 70, textAlignVertical: "top" }]}
           multiline
         />
-      </View>
-      <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Estado:</Text>
-        <TextInput placeholder="Estado" style={styles.input} />
       </View>
       <View style={styles.inputGroup}>
         <Text style={styles.inputLabel}>Dirección:</Text>
@@ -483,15 +478,12 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
                 <Text style={styles.tableHeaderCell}>LECTURA</Text>
                 <Text style={styles.tableHeaderCell}>OPCIÓN</Text>
               </View>
-
-
-
               {/* Filas de datos */}
-              { rutas.map((ruta, index) => (
+              {rutas.map((ruta, index) => (
                 <View style={styles.tableRow} key={index}>
-                  <Text style={styles.tableCell1}> { ruta.orden}  </Text>
-                  <Text style={styles.tableCell}> { ruta.cuenta} </Text>
-                  <Text style={styles.tableCell}> { ruta.lectura} </Text>
+                  <Text style={styles.tableCell1}> {ruta.orden}  </Text>
+                  <Text style={styles.tableCell}> {ruta.cuenta} </Text>
+                  <Text style={styles.tableCell}> {ruta.lectura} </Text>
                   <TouchableOpacity
                     style={styles.optionButton}
                     onPress={() => handleNavigateToSection1(ruta)}
@@ -500,8 +492,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
               ))}
-
-
             </View>
             <TouchableOpacity
               style={styles.modalButton}

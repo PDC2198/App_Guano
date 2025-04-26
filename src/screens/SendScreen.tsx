@@ -86,12 +86,12 @@ const SendScreen = () => {
           justifyContent: "center",
           alignItems: "center"
         }}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.buttonExport}
             onPress={() => LecturaController.exportDatabase()}
           >
             <Text style={styles.textExport}>Exportar DB</Text>
-             <Icon name="download" size={20} color="#fff" />
+            <Icon name="download" size={25} color="#fff" />
           </TouchableOpacity>
         </View>
 
@@ -135,7 +135,6 @@ const SendScreen = () => {
               <Picker.Item label="No Enviado" value="no_enviado" />
             </Picker>
           </View>
-
           {/* Tabla */}
           <View style={styles.tableContainer}>
             <FlatList
@@ -149,7 +148,7 @@ const SendScreen = () => {
                   <Text style={styles.headerCell}>NÚMERO DE CUENTA</Text>
                   <Text style={styles.headerCell}>LECTURA (m³)</Text>
                   <Text style={styles.headerCell}>CONSUMO (m³)</Text>
-                  <Text style={styles.headerCell}>OBSERVACIÓN</Text>
+                  <Text style={[styles.headerCell, styles.columnSmall]}>FOTO</Text>
                   <Text
                     style={[
                       styles.headerCell,
@@ -157,7 +156,7 @@ const SendScreen = () => {
                       styles.lastCell,
                     ]}
                   >
-                    FOTO
+                    ACCIÓN
                   </Text>
                 </View>
               )}
@@ -169,20 +168,36 @@ const SendScreen = () => {
                   <Text style={styles.cell}>{item.numeroCuenta}</Text>
                   <Text style={styles.cell}>{item.lecturaActual}</Text>
                   <Text style={styles.cell}>{item.consumo}</Text>
-                  <Text style={styles.cell}>{item.observacion}</Text>
+
+                  {/* FOTO */}
                   <TouchableOpacity
                     style={styles.photoButton}
                     onPress={() => openModal(item.foto)}
                   >
                     <Text style={styles.photoText}>
-                      {" "}
                       {item.foto ? (
                         "📷"
                       ) : (
                         <Icon name="image-off" size={15} color={"white"} />
-                      )}{" "}
+                      )}
                     </Text>
                   </TouchableOpacity>
+
+                  {/* ACCIÓN */}
+                  <View style={[styles.cell, styles.columnSmall, styles.actionContainer]}>
+                    <TouchableOpacity
+                      style={styles.iconButton}
+                      onPress={() => handleEdit(item)}
+                    >
+                      <Icon name="pencil" size={18} color="#ffffff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.iconButton, styles.deleteButton]}
+                      onPress={() => handleDelete(item)}
+                    >
+                      <Icon name="trash-can" size={18} color="#ffffff" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
             />
@@ -438,7 +453,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  buttonExport : {
+  buttonExport: {
     paddingVertical: 5,
     paddingHorizontal: 10,
     backgroundColor: "#62748e",
@@ -453,7 +468,25 @@ const styles = StyleSheet.create({
   textExport: {
     textAlign: "center",
     color: "#FFFFFF"
-  }
+  },
+  actionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6, // espacio entre íconos
+  },
+  
+  iconButton: {
+    backgroundColor: '#3B82F6',
+    padding: 6,
+    borderRadius: 4,
+    marginHorizontal: 2,
+  },
+  
+  deleteButton: {
+    backgroundColor: '#EF4444',
+  },
+  
 });
 
 export default SendScreen;
