@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CameraCapturedPicture } from "expo-camera";
 import { Asset } from "expo-media-library";
-import { Controller, set, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   Modal,
   ScrollView,
@@ -16,12 +16,12 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import ErrorMessage from "../components/ErrorMessage";
+import MessageAlert from "../components/MessageAlert";
 import Spinner from "../components/Spinner";
 import TakePicture from "../components/TakePicture";
 import { LecturaController } from "../controllers/LecturaController";
-import { LecturaFormInput, LecturaT, RootStackParamList, Rutas } from "../types";
 import { rutas } from "../data/rutas";
+import { LecturaFormInput, LecturaT, RootStackParamList, Ruta } from "../types";
 
 type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, "Reading">;
 
@@ -31,7 +31,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [routeModalVisible, setRouteModalVisible] = useState(false);
-  const [observacion, setObservacion] = useState("")
+  const [observacion, setObservacion] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,13 +41,17 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     undefined
   );
 
+  //Manejar la siguiente ruta
+  const [rutaSelect, setRutaSelect] = useState<Ruta>();
+  const [message, setMessage] = useState(""); //mensajes de la aplicación
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
     watch,
-    setValue
+    setValue,
   } = useForm<LecturaFormInput>({
     defaultValues: {
       ruta: "",
@@ -55,12 +59,12 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       numeroCuenta: "",
       lecturaActual: "",
       consumo: "",
-      lecturaInicial: ""
+      lecturaInicial: "",
     },
   });
 
   const lecturaActual = watch("lecturaActual");
-  const lecturaInicial = watch("lecturaInicial")
+  const lecturaInicial = watch("lecturaInicial");
 
   const routes = ["Ruta 1", "Ruta 2", "Ruta 3", "Ruta 4"];
 
@@ -74,13 +78,37 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     setRouteModalVisible(true); // Mostrar modal con el nombre de la ruta
   };
 
-  const handleNavigateToSection1 = (ruta: Rutas) => {
-    setValue("lecturaInicial", ruta.lectura)
-    setValue("ordenLectura", ruta.orden.toString())
-    setValue("numeroCuenta", ruta.cuenta)
+  //Toma la ruta seleccionada
+  const handleNavigateToSection1 = (ruta: Ruta) => {
+    setValue("lecturaInicial", ruta.lectura);
+    setValue("ordenLectura", ruta.orden.toString());
+    setValue("numeroCuenta", ruta.cuenta);
 
     setRouteModalVisible(false); // Cerrar el modal
     setCurrentSection(0); // Ir a la sección 1 del formulario
+    setRutaSelect(ruta); //Setear la ruta seleccionada
+  };
+
+  // Dirige a la siguiente ruta
+  const handlerNextRoute = () => {
+    const index = rutas.findIndex((rutas) => rutas.orden === rutaSelect?.orden); //Index
+    const lastElement = rutas.length - 1; //Último elemento
+
+    //Validar que exista
+    if (index === -1) return;
+
+    // Validar que no sea el último elemento
+    if (index === lastElement) {
+      setMessage("No hay más rutas disponibles");
+      return;
+    }
+
+    //Obtener el siguiente
+    const nextRoute = rutas[index + 1];
+    setRutaSelect(nextRoute);
+    setValue("lecturaInicial", nextRoute.lectura);
+    setValue("ordenLectura", nextRoute.orden.toString());
+    setValue("numeroCuenta", nextRoute.cuenta);
   };
 
   const handleSave = async (data: LecturaFormInput) => {
@@ -88,13 +116,13 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       setIsLoading(true);
       const dataSend: LecturaT = {
         numeroCuenta: data.numeroCuenta,
-        ruta: "1", //Por defecto
+        ruta: "2", //Por defecto
         ordenLectura: +data.ordenLectura,
         lecturaActual: +data.lecturaActual,
         consumo: +data.consumo,
         fecha: date.toString(),
         foto: photoGallery?.uri || "",
-        observacion: observacion
+        observacion: observacion,
       };
 
       console.log("datos: ", dataSend);
@@ -107,9 +135,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       });
 
       reset(); //Resetear formulario
-      setObservacion('') //Resetear
+      setObservacion(""); //Resetear
       setPhotoGallery(undefined);
       setPhoto(undefined);
+      handlerNextRoute(); //Lamar función para cargar la siguiente ruta
     } catch (error) {
       console.log(error);
       Toast.show({
@@ -124,12 +153,11 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
 
   //UseEffect para calcular el consumo
   useEffect(() => {
-
     if (lecturaActual && lecturaInicial) {
-      const resultado = +lecturaActual - +lecturaInicial
-      setValue("consumo", resultado.toFixed(2))
+      const resultado = +lecturaActual - +lecturaInicial;
+      setValue("consumo", resultado.toFixed(2));
     }
-  }, [lecturaActual, lecturaInicial])
+  }, [lecturaActual, lecturaInicial]);
 
   const sections = [
     <View key="section1" style={styles.form}>
@@ -192,8 +220,9 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
 
           {errors?.ordenLectura?.message && (
-            <ErrorMessage message={errors.ordenLectura.message} />
+            <MessageAlert message={errors.ordenLectura.message} type="error"  />
           )}
+
         </View>
         <View style={styles.inputGroupRow}>
           <Text style={styles.inputLabel}>Número de cuenta:</Text>
@@ -215,7 +244,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
 
           {errors?.numeroCuenta?.message && (
-            <ErrorMessage message={errors.numeroCuenta.message} />
+            <MessageAlert message={errors.numeroCuenta.message} type="error" />
           )}
         </View>
       </View>
@@ -287,7 +316,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
 
           {errors?.lecturaActual?.message && (
-            <ErrorMessage message={errors.lecturaActual.message} />
+            <MessageAlert message={errors.lecturaActual.message} type="error" />
           )}
         </View>
       </View>
@@ -306,7 +335,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
                 value={value}
                 onChangeText={onChange}
                 editable={false}
-
               />
             )}
           />
@@ -395,7 +423,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         {currentSection === 0 && ( // Mostrar botón solo en la sección 1
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              setMessage('')
+              navigation.goBack()
+            }}
           >
             <Icon name="menu-open" size={30} color="#fff" />
           </TouchableOpacity>
@@ -406,6 +437,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           {currentSection === 1 ? "    Detalles de la toma" : "Toma de lectura"}
         </Text>
       </View>
+
+      { message && (
+        <MessageAlert type="info" message={message} />
+      )}
 
       {/* Contenido de la sección */}
       {typeof sections[currentSection] === "string" ? (
@@ -481,7 +516,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
               {/* Filas de datos */}
               {rutas.map((ruta, index) => (
                 <View style={styles.tableRow} key={index}>
-                  <Text style={styles.tableCell1}> {ruta.orden}  </Text>
+                  <Text style={styles.tableCell1}> {ruta.orden} </Text>
                   <Text style={styles.tableCell}> {ruta.cuenta} </Text>
                   <Text style={styles.tableCell}> {ruta.lectura} </Text>
                   <TouchableOpacity
@@ -579,7 +614,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     backgroundColor: "#fff",
-    opacity: 0.5
+    opacity: 0.5,
   },
   filtersRow: {
     flexDirection: "row",

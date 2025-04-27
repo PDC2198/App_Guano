@@ -15,6 +15,7 @@ import ShowPicture from "../components/ShowPicture";
 import Toast from "react-native-toast-message";
 
 const SendScreen = () => {
+
   const [recordsPerPage, setRecordsPerPage] = useState(25);
   const [statusFilter, setStatusFilter] = useState("todos");
   const [periodoFilter, setPeriodoFilter] = useState("todos");
@@ -28,10 +29,26 @@ const SendScreen = () => {
   const navigation = useNavigation();
 
   //Obtener lecturas de la DB
-  const getLecturas = async (params: ParamsLectura) => {
+  const getLecturas = async () => {
     try {
-      const response = await LecturaController.getAllLectura(params);
-      console.log(response);
+      
+      //Definir el estado
+      let estado : boolean | undefined = false
+
+      if(statusFilter === "todos") {
+        estado = undefined
+      } else {
+        estado = statusFilter === "enviado" ? true : false
+      }
+
+      //Funcionar la ruta
+      const ruta = rutaFilter === "todas" ? undefined : rutaFilter
+
+      const response = await LecturaController.getAllLectura({
+        ruta,
+        estado,
+      });
+      
       setLecturas(response);
     } catch (error) {
       console.log(error);
@@ -61,8 +78,8 @@ const SendScreen = () => {
 
 
   useEffect(() => {
-    getLecturas({})
-  }, []);
+    getLecturas()
+  }, [statusFilter, rutaFilter]);
 
   return (
     <>
@@ -187,15 +204,15 @@ const SendScreen = () => {
                   <View style={[styles.cell, styles.columnSmall, styles.actionContainer]}>
                     <TouchableOpacity
                       style={styles.iconButton}
-                      onPress={() => handleEdit(item)}
+                      onPress={() => console.log(item)}
                     >
-                      <Icon name="pencil" size={18} color="#ffffff" />
+                      <Icon name="pencil" size={15} color="#ffffff" />
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.iconButton, styles.deleteButton]}
-                      onPress={() => handleDelete(item)}
+                      onPress={() => console.log(item)}
                     >
-                      <Icon name="trash-can" size={18} color="#ffffff" />
+                      <Icon name="trash-can" size={15} color="#ffffff" />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -470,7 +487,8 @@ const styles = StyleSheet.create({
     color: "#FFFFFF"
   },
   actionContainer: {
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 6, // espacio entre íconos
