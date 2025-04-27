@@ -15,13 +15,13 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import MessageAlert from "../components/MessageAlert";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Spinner from "../components/Spinner";
 import TakePicture from "../components/TakePicture";
 import { LecturaController } from "../controllers/LecturaController";
 import { rutas } from "../data/rutas";
 import { LecturaFormInput, LecturaT, RootStackParamList, Ruta } from "../types";
+import MessageAlert from "../components/MessageAlert";
 
 type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, "Reading">;
 
@@ -440,10 +440,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         </Text>
       </View>
 
-      {message && (
-        <MessageAlert type="info" message={message} />
-      )}
-
       {/* Contenido de la sección */}
       {typeof sections[currentSection] === "string" ? (
         <Text>{sections[currentSection]}</Text>
@@ -616,11 +612,11 @@ const styles = StyleSheet.create({
   },
   inputDisabled: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
-    padding: 12,
-    borderRadius: 10,
-    backgroundColor: "#f3f4f6",
-    opacity: 0.7,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    opacity: 0.5
   },
   filtersRow: {
     flexDirection: "row",
