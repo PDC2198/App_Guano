@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CameraCapturedPicture } from "expo-camera";
 import { Asset } from "expo-media-library";
-import { Controller, set, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   Modal,
   ScrollView,
@@ -15,13 +15,13 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import ErrorMessage from "../components/ErrorMessage";
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MessageAlert from "../components/MessageAlert";
 import Spinner from "../components/Spinner";
 import TakePicture from "../components/TakePicture";
 import { LecturaController } from "../controllers/LecturaController";
-import { LecturaFormInput, LecturaT, RootStackParamList, Rutas } from "../types";
 import { rutas } from "../data/rutas";
+import { LecturaFormInput, LecturaT, RootStackParamList, Ruta } from "../types";
 
 type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, "Reading">;
 
@@ -31,7 +31,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [routeModalVisible, setRouteModalVisible] = useState(false);
-  const [observacion, setObservacion] = useState("")
+  const [observacion, setObservacion] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,13 +41,17 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     undefined
   );
 
+  //Manejar la siguiente ruta
+  const [rutaSelect, setRutaSelect] = useState<Ruta>();
+  const [message, setMessage] = useState(""); //mensajes de la aplicación
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
     watch,
-    setValue
+    setValue,
   } = useForm<LecturaFormInput>({
     defaultValues: {
       ruta: "",
@@ -55,12 +59,12 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       numeroCuenta: "",
       lecturaActual: "",
       consumo: "",
-      lecturaInicial: ""
+      lecturaInicial: "",
     },
   });
 
   const lecturaActual = watch("lecturaActual");
-  const lecturaInicial = watch("lecturaInicial")
+  const lecturaInicial = watch("lecturaInicial");
 
   const routes = ["Ruta 1", "Ruta 2", "Ruta 3", "Ruta 4"];
 
@@ -74,13 +78,37 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     setRouteModalVisible(true); // Mostrar modal con el nombre de la ruta
   };
 
-  const handleNavigateToSection1 = (ruta: Rutas) => {
-    setValue("lecturaInicial", ruta.lectura)
-    setValue("ordenLectura", ruta.orden.toString())
-    setValue("numeroCuenta", ruta.cuenta)
+  //Toma la ruta seleccionada
+  const handleNavigateToSection1 = (ruta: Ruta) => {
+    setValue("lecturaInicial", ruta.lectura);
+    setValue("ordenLectura", ruta.orden.toString());
+    setValue("numeroCuenta", ruta.cuenta);
 
     setRouteModalVisible(false); // Cerrar el modal
     setCurrentSection(0); // Ir a la sección 1 del formulario
+    setRutaSelect(ruta); //Setear la ruta seleccionada
+  };
+
+  // Dirige a la siguiente ruta
+  const handlerNextRoute = () => {
+    const index = rutas.findIndex((rutas) => rutas.orden === rutaSelect?.orden); //Index
+    const lastElement = rutas.length - 1; //Último elemento
+
+    //Validar que exista
+    if (index === -1) return;
+
+    // Validar que no sea el último elemento
+    if (index === lastElement) {
+      setMessage("No hay más rutas disponibles");
+      return;
+    }
+
+    //Obtener el siguiente
+    const nextRoute = rutas[index + 1];
+    setRutaSelect(nextRoute);
+    setValue("lecturaInicial", nextRoute.lectura);
+    setValue("ordenLectura", nextRoute.orden.toString());
+    setValue("numeroCuenta", nextRoute.cuenta);
   };
 
   const handleSave = async (data: LecturaFormInput) => {
@@ -88,13 +116,13 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       setIsLoading(true);
       const dataSend: LecturaT = {
         numeroCuenta: data.numeroCuenta,
-        ruta: "1", //Por defecto
+        ruta: "2", //Por defecto
         ordenLectura: +data.ordenLectura,
         lecturaActual: +data.lecturaActual,
         consumo: +data.consumo,
         fecha: date.toString(),
         foto: photoGallery?.uri || "",
-        observacion: observacion
+        observacion: observacion,
       };
 
       console.log("datos: ", dataSend);
@@ -107,9 +135,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       });
 
       reset(); //Resetear formulario
-      setObservacion('') //Resetear
+      setObservacion(""); //Resetear
       setPhotoGallery(undefined);
       setPhoto(undefined);
+      handlerNextRoute(); //Lamar función para cargar la siguiente ruta
     } catch (error) {
       console.log(error);
       Toast.show({
@@ -124,12 +153,11 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
 
   //UseEffect para calcular el consumo
   useEffect(() => {
-
     if (lecturaActual && lecturaInicial) {
-      const resultado = +lecturaActual - +lecturaInicial
-      setValue("consumo", resultado.toFixed(2))
+      const resultado = +lecturaActual - +lecturaInicial;
+      setValue("consumo", resultado.toFixed(2));
     }
-  }, [lecturaActual, lecturaInicial])
+  }, [lecturaActual, lecturaInicial]);
 
   const sections = [
     <View key="section1" style={styles.form}>
@@ -139,10 +167,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           <Text style={styles.filterLabel}>Fecha de lectura:</Text>
           <TouchableOpacity
             style={styles.datePicker}
-            onPress={() => setShowDatePicker(!currentSection)}
+            onPress={() => setShowDatePicker(!showDatePicker)}
           >
             <Text style={styles.dateText}>
-              {date.toLocaleDateString("es-ES")}
+              {date.toLocaleDateString('es-ES')}
             </Text>
             <Icon name="calendar-month" size={20} color="#555" />
           </TouchableOpacity>
@@ -158,16 +186,18 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
 
         <View style={styles.filter}>
           <Text style={styles.filterLabel}>Ruta:</Text>
-          <Picker
-            selectedValue={selectedRoute}
-            onValueChange={(itemValue) => handleRouteSelection(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Seleccionar ruta" value="" />
-            {routes.map((route, index) => (
-              <Picker.Item key={index} label={route} value={route} />
-            ))}
-          </Picker>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedRoute}
+              onValueChange={handleRouteSelection}
+              style={styles.picker}
+            >
+              <Picker.Item label="Seleccionar ruta" value="" />
+              {routes.map((route, index) => (
+                <Picker.Item key={index} label={route} value={route} />
+              ))}
+            </Picker>
+          </View>
         </View>
       </View>
 
@@ -192,8 +222,9 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
 
           {errors?.ordenLectura?.message && (
-            <ErrorMessage message={errors.ordenLectura.message} />
+            <MessageAlert message={errors.ordenLectura.message} type="error" />
           )}
+
         </View>
         <View style={styles.inputGroupRow}>
           <Text style={styles.inputLabel}>Número de cuenta:</Text>
@@ -215,7 +246,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
 
           {errors?.numeroCuenta?.message && (
-            <ErrorMessage message={errors.numeroCuenta.message} />
+            <MessageAlert message={errors.numeroCuenta.message} type="error" />
           )}
         </View>
       </View>
@@ -287,7 +318,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           />
 
           {errors?.lecturaActual?.message && (
-            <ErrorMessage message={errors.lecturaActual.message} />
+            <MessageAlert message={errors.lecturaActual.message} type="error" />
           )}
         </View>
       </View>
@@ -306,7 +337,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
                 value={value}
                 onChangeText={onChange}
                 editable={false}
-
               />
             )}
           />
@@ -395,7 +425,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         {currentSection === 0 && ( // Mostrar botón solo en la sección 1
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              setMessage('')
+              navigation.goBack()
+            }}
           >
             <Icon name="menu-open" size={30} color="#fff" />
           </TouchableOpacity>
@@ -406,6 +439,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           {currentSection === 1 ? "    Detalles de la toma" : "Toma de lectura"}
         </Text>
       </View>
+
+      {message && (
+        <MessageAlert type="info" message={message} />
+      )}
 
       {/* Contenido de la sección */}
       {typeof sections[currentSection] === "string" ? (
@@ -425,29 +462,6 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         )}
 
-        {currentSection === 0 && (
-          <View style={styles.actionButtons}>
-            <TakePicture
-              setPhotoGallery={setPhotoGallery}
-              setPhoto={setPhoto}
-              photo={photo}
-              photoGallery={photoGallery}
-            />
-
-            <TouchableOpacity
-              style={[styles.arrowButton, styles.saveButton]}
-              onPress={handleSubmit(handleSave)}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Spinner />
-              ) : (
-                <Text style={styles.arrowText}>TERMINAR</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-
         {currentSection < sections.length - 1 && (
           <TouchableOpacity
             style={styles.arrowButton}
@@ -456,6 +470,31 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
             <Text style={styles.arrowText}>DETALLES</Text>
             <Icon name="arrow-right" size={30} color="#fff" />
           </TouchableOpacity>
+        )}
+
+        {currentSection === 0 && (
+          <View style={styles.actionButtons}>
+            <TakePicture
+              setPhotoGallery={setPhotoGallery}
+              setPhoto={setPhoto}
+              photo={photo}
+              photoGallery={photoGallery}
+            />
+            <TouchableOpacity
+              style={[styles.arrowButton, styles.saveButton]}
+              onPress={handleSubmit(handleSave)}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Spinner />
+              ) : (
+                <>
+                  <Icon name="save" size={20} color="#fff" style={styles.iconButton}/>
+                  <Text style={styles.arrowText}>GUARDAR</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
@@ -481,7 +520,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
               {/* Filas de datos */}
               {rutas.map((ruta, index) => (
                 <View style={styles.tableRow} key={index}>
-                  <Text style={styles.tableCell1}> {ruta.orden}  </Text>
+                  <Text style={styles.tableCell1}> {ruta.orden} </Text>
                   <Text style={styles.tableCell}> {ruta.cuenta} </Text>
                   <Text style={styles.tableCell}> {ruta.lectura} </Text>
                   <TouchableOpacity
@@ -509,146 +548,170 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 12,
-    backgroundColor: "#ffffff",
+    padding: 16,
+    backgroundColor: "#F9FAFB", // Color de fondo más suave
   },
   topBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 70,
-    marginBottom: 50,
+    marginTop: 50,
+    marginBottom: 30,
   },
   backButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    backgroundColor: "#2563eb",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
     borderRadius: 15,
     alignItems: "center",
     flexDirection: "row",
     marginRight: 10,
   },
   title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: "bold",
-    marginLeft: 75,
+    marginLeft: 70,
+    color: "#111827",
   },
   form: {
-    marginTop: 15,
+    marginTop: 10,
   },
   rowGroup: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 15,
+    marginBottom: 16,
   },
   inputGroupRow: {
     flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 6,
   },
   inputGroup: {
-    marginBottom: 15,
-    marginHorizontal: 5,
+    marginBottom: 16,
+    marginHorizontal: 6,
   },
   inputLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 6,
   },
   greenInput: {
     borderWidth: 2,
-    borderColor: "#28a745",
-    backgroundColor: "#e9f7ef",
-    borderRadius: 8,
-    padding: 10,
+    borderColor: "#22c55e",
+    backgroundColor: "#dcfce7",
+    borderRadius: 10,
+    padding: 12,
   },
   greenLabel: {
-    color: "#28a745",
+    color: "#374151",
     fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 5,
+    fontSize: 15,
+    marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: "#fff",
+    borderColor: "#d1d5db",
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: "#ffffff",
   },
   inputDisabled: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    opacity: 0.5
+    borderColor: "#d1d5db",
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: "#f3f4f6",
+    opacity: 0.7,
   },
   filtersRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
+    marginHorizontal: 5,
+    padding: 10,  // Relleno para darle espacio interno
+    borderWidth: 2, // Borde alrededor de los filtros
+    borderColor: "#2563eb", // Color del borde
+    borderRadius: 12, // Bordes redondeados
+    backgroundColor: "#ffffff", // Fondo blanco
+    elevation: 5,
   },
   filter: {
     flex: 1,
-    marginRight: 10,
+    marginRight: 8,
+    borderColor: "#2563eb", // Contorno azul para destacar
+
   },
   filterLabel: {
     fontWeight: "bold",
+    fontSize: 15,
+    color: "#374151",
+    marginBottom: 5,
+    flexDirection: "row",
   },
   datePicker: {
     flexDirection: "row",
     alignItems: "center",
-    borderColor: "#ccc",
-    borderWidth: 3,
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 10,
+    borderColor: "#d1d5db",
+    borderWidth: 2,
+    padding: 12,
+    borderRadius: 10,
+    marginTop: 8,
     justifyContent: "center",
   },
   dateText: {
-    marginRight: 30,
+    marginRight: 25,
     fontSize: 15,
+    color: "#374151",
+  },
+  pickerContainer: {
+    borderWidth: 2, // Aplica el borde
+    borderColor: "#d1d5db", // Color del borde
+    borderRadius: 10, // Bordes redondeados
+    marginTop: 8, // Separación superior
+    height: 49, // Establece la altura
   },
   picker: {
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: "#fff",
+    flex: 1, // Ocupa todo el espacio disponible
+    height: "100%", // Asegura que el picker ocupe toda la altura disponible
+
   },
   actionButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 20,
   },
   photoButton: {
-    backgroundColor: "#34495e",
+    backgroundColor: "#1e293b",
     marginRight: 10,
     alignItems: "center",
-    paddingVertical: 16,
-    borderRadius: 20,
+    paddingVertical: 14,
+    borderRadius: 12,
     flex: 1,
     justifyContent: "center",
   },
   saveButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#16a34a",
     alignItems: "center",
-    paddingVertical: 16,
-    borderRadius: 20,
-    justifyContent: "center",
+    paddingVertical: 14,
+    borderRadius: 12,
     flex: 1,
+    justifyContent: "center",
   },
   arrowButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 10,
-    paddingHorizontal: 40,
-    borderRadius: 20,
+    backgroundColor: "#2563eb",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 12,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 25,
     alignSelf: "flex-end",
     flexDirection: "row",
   },
   arrowText: {
-    color: "#fff",
+    color: "#ffffff",
     fontWeight: "bold",
     marginRight: 8,
+    fontSize: 16,
   },
   closeButton: {
     flexDirection: "row",
@@ -658,88 +721,106 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)", // un poco más oscuro para más contraste
   },
   modalContent: {
-    backgroundColor: "#fff",
-    padding: 100,
-    borderRadius: 15,
-    width: 410,
+    backgroundColor: "#ffffff",
+    padding: 20,
+    borderRadius: 20,
+    width: "85%",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 35,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
+    color: "#111827",
+    marginBottom: 10,
   },
   modalText: {
     fontSize: 16,
-    marginVertical: 10,
+    marginVertical: 12,
+    textAlign: "center",
+    color: "#4b5563",
   },
   modalButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 20,
+    backgroundColor: "#2563eb",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 12,
+    marginTop: 16,
   },
   modalButtonText: {
-    color: "#fff",
+    color: "#ffffff",
     fontWeight: "bold",
+    fontSize: 16,
   },
-
   table: {
-    marginTop: 10,
-    borderWidth: 3,
-    borderColor: "#ccc",
-    borderRadius: 7,
-    width: "170%",
+    marginTop: 15,
+    borderWidth: 2,
+    borderColor: "#d1d5db",
+    borderRadius: 10,
+    width: "100%",
   },
   tableRowHeader: {
     flexDirection: "row",
-    backgroundColor: "#007BFF",
-    paddingVertical: 15,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 7,
+    backgroundColor: "#2563eb",
+    paddingVertical: 14,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   tableRow: {
     flexDirection: "row",
-    borderBottomWidth: 4,
-    borderColor: "#ccc",
-    paddingVertical: 15,
+    borderBottomWidth: 2,
+    borderColor: "#d1d5db",
+    paddingVertical: 14,
   },
   tableHeaderCell: {
-    flex: 0.9,
-    color: "#fff",
+    flex: 1,
+    color: "#ffffff",
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: 14,
   },
   firstHeaderCell: {
-    flex: 0.8, // Reducir el ancho de la primera celda
-    color: "#fff",
+    flex: 1,
+    color: "#ffffff",
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: 14,
   },
   tableCell: {
-    flex: 1,
+    flex: 1.3,
     textAlign: "center",
-    justifyContent: "center",
+    color: "#374151",
+    fontSize: 13,
   },
   tableCell1: {
-    flex: 0.8,
+    flex: 0.9,
     textAlign: "center",
-    justifyContent: "center",
+    color: "#374151",
+    fontSize: 13,
   },
   optionButton: {
-    backgroundColor: "#28a745",
-    paddingVertical: 5,
-    paddingHorizontal: 30,
+    backgroundColor: "#22c55e",
+    paddingVertical: 6,
+    paddingHorizontal: 20,
     borderRadius: 8,
-    marginHorizontal: 10,
+    marginHorizontal: 6,
   },
   optionButtonText: {
-    color: "#fff",
+    color: "#ffffff",
     fontWeight: "bold",
+    fontSize: 14,
   },
+  iconButton: {
+    marginRight: 10, // Espaciado entre el ícono y el texto
+  }
 });
+
 
 export default ReadingScreen;

@@ -33,7 +33,7 @@ export type RootStackParamList = {
 //Params de rutas
 export type ParamsLectura = {
   ruta?: string, 
-  estado?: boolean
+  estado?: boolean,
 }
 
 //Lecturas getAll
@@ -54,7 +54,7 @@ export type LecturaRecord = {
 
 
 //Type para rutas
-export type Rutas =     {
+export type Ruta =     {
   orden: number,
   cuenta: string,
   lectura: string,

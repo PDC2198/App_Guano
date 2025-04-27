@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type TakePictureProps = {
   setPhoto: Dispatch<SetStateAction<CameraCapturedPicture | undefined>>
@@ -121,10 +121,11 @@ export default function TakePicture({
         style={[styles.photoButton, styles.arrowButton ]}
         onPress={() => setIsCameraVisible(true)}
       >
+        <Icon name="add-a-photo" size={20} color="#fff" style={styles.iconButton}/>
         <Text style={styles.arrowText}>TOMAR FOTO</Text> 
         {
           photoGallery && (
-            <Icon name="check-underline" size={25} color={"white"} />
+            <Icon name="check" size={25} color={"white"} />
           )
         }
 
@@ -149,7 +150,7 @@ export default function TakePicture({
                   style={styles.flipButton}
                   onPress={toggleCameraFacing}
                 >
-                  <Icon name="camera-flip" size={30} color={"white"} />
+                  <Icon name="flip-camera-android" size={40} color={"white"} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -186,14 +187,14 @@ export default function TakePicture({
 
                 onPress={() => deleteSavedPhoto()}
               >
-                 <Icon name="trash-can" size={30} color={"#c10007"} />
+                 <Icon name="delete" size={30} color={"#c10007"} style={styles.trashButton}/>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setIsCameraVisible(false)}
               >
-                <Icon name="close" size={30} color={"white"} />
+                <Icon name="cancel" size={30} color={"white"}/>
               </TouchableOpacity>
             </View>
           </View>
@@ -212,6 +213,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 20,
     color: "#FFFFFF",
+  },
+  icon: {
+    marginLeft: 8, // Espaciado entre el ícono y el texto
   },
   arrowButton: {
     paddingVertical: 15,
@@ -282,6 +286,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 10,
   },
+  trashButton: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 10,
+    borderRadius: 5,
+    margin: 10,
+  },
   
   closeButtonText: {
     color: "white",
@@ -324,4 +334,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  iconButton: {
+    marginRight: 10, // Espaciado entre el ícono y el texto
+  }
 });
