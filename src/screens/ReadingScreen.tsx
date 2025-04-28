@@ -26,6 +26,7 @@ import MessageAlert from "../components/MessageAlert";
 type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, "Reading">;
 
 const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
+
   const [selectedRoute, setSelectedRoute] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -157,7 +158,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
       const resultado = +lecturaActual - +lecturaInicial;
       setValue("consumo", resultado.toFixed(2));
     }
-  }, [lecturaActual, lecturaInicial]);
+  }, [lecturaActual, lecturaInicial, ]);
 
   const sections = [
     <View key="section1" style={styles.form}>
@@ -440,6 +441,10 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
         </Text>
       </View>
 
+      { message && (
+        <MessageAlert message={message} type="info" />
+      )}
+
       {/* Contenido de la sección */}
       {typeof sections[currentSection] === "string" ? (
         <Text>{sections[currentSection]}</Text>
@@ -485,7 +490,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
                 <Spinner />
               ) : (
                 <>
-                  <Icon name="save" size={20} color="#fff" style={styles.iconButton}/>
+                  <Icon name="content-save" size={20} color="#fff" style={styles.iconButton}/>
                   <Text style={styles.arrowText}>GUARDAR</Text>
                 </>
               )}

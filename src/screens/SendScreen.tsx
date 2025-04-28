@@ -16,8 +16,8 @@ import ShowPicture from "../components/ShowPicture";
 import Toast from "react-native-toast-message";
 
 const SendScreen = () => {
-  const [recordsPerPage, setRecordsPerPage] = useState(25); //Total de páginas
-  const [page, setPage] = useState(25); //Página actual escogida por el usuario
+  const [recordsPerPage, setRecordsPerPage] = useState(25); //Cantidad de páginas
+  const [page, setPage] = useState(1); //Página actual escogida por el usuario
 
   const [statusFilter, setStatusFilter] = useState("todos");
   const [periodoFilter, setPeriodoFilter] = useState("todos");
