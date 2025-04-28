@@ -32,8 +32,18 @@ export type RootStackParamList = {
 
 //Params de rutas
 export type ParamsLectura = {
-  ruta?: string, 
-  estado?: boolean,
+  ruta?: string;
+  estado?: boolean;
+  page: number;
+  pageSize: number;
+}
+
+// Type para paginacion
+export type Pagination = {
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
 }
 
 //Lecturas getAll

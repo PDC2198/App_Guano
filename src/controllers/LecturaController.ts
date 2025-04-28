@@ -1,5 +1,5 @@
 import * as LecturaModel from "../models/LecturoModel";
-import { LecturaT, ParamsLectura } from "../types";
+import { LecturaRecord, LecturaT, ParamsLectura } from "../types";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import * as Sharing from 'expo-sharing';
@@ -31,5 +31,9 @@ export class LecturaController {
     } else {
       console.log("Sharing no disponible en este dispositivo");
     }
+  }
+
+  static async delete (id: LecturaRecord['id']) {
+    return await LecturaModel.deleteLectura(id);
   }
 }

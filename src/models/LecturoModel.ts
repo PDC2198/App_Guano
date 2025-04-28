@@ -1,5 +1,5 @@
 import dbPromise from "../database/sqlite";
-import { LecturaRecord, LecturaT, ParamsLectura } from "../types";
+import { LecturaRecord, LecturaT, Pagination, ParamsLectura } from "../types";
 
 //Crear tabla
 export const initDatabase = async () => {
@@ -71,38 +71,78 @@ export const createLectura = async (lecturaData: LecturaT) => {
   }
 };
 
-export const getLectura = async ({ ruta, estado} : ParamsLectura) => {
+// Obtener
+export const getLectura = async ({ ruta, estado, page = 1, pageSize = 25 }: ParamsLectura) => {
   try {
     const db = await dbPromise;
 
-    let query = `SELECT * FROM Lecturas`;
     const conditions: string[] = [];
-    const params: (string | boolean)[] = [];
+    const params: (string | boolean | number)[] = [];
 
-    // Agregar ruta
+    // Construir condiciones dinámicamente
     if (ruta) {
       conditions.push(`ruta = ?`);
       params.push(ruta);
     }
 
-    // Agregar estado
     if (typeof estado === "boolean") {
       conditions.push(`estado = ?`);
       params.push(estado);
     }
 
-    // Añadir cláusula WHERE si hay condiciones
+    // Base de la consulta
+    let query = `SELECT * FROM Lecturas`;
+    let countQuery = `SELECT COUNT(*) as total FROM Lecturas`; //Contar la cantidad
+
+    // Si hay filtros, agregar WHERE
     if (conditions.length > 0) {
-      query += ` WHERE ` + conditions.join(' AND ');
+      const whereClause = ' WHERE ' + conditions.join(' AND ');
+      query += whereClause;
+      countQuery += whereClause;
     }
 
-    // Ordenamos por ruta
-    query += ` ORDER BY ruta DESC`;
+    // Primero obtener el total de elementos (con filtros aplicados)
+    const totalResult = await db.getAllAsync<{ total: number }>(countQuery, params);
+    const totalItems = totalResult[0]?.total ?? 0;
 
+    // Calcular paginación
+    const skip = pageSize * (page - 1);
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    // Agregar orden y paginación segura
+    query += ` ORDER BY ruta DESC LIMIT ? OFFSET ?`;
+    params.push(pageSize, skip);
+
+    // Obtener datos paginados
     const lecturas = await db.getAllAsync<LecturaRecord>(query, params);
-    return lecturas
 
+    const responseData: {
+      lecturas: LecturaRecord[];
+      pagination: Pagination;
+    } = {
+      lecturas,
+      pagination: {
+        currentPage: page,
+        pageSize,
+        totalItems,
+        totalPages
+      }
+    };
+
+    return responseData;
+    
   } catch (error) {
     throw error;
   }
 };
+
+
+// Eliminar
+export const deleteLectura = async (id: LecturaRecord['id']) => {
+  try {
+    const db = await dbPromise;
+    await db.runAsync(`DELETE FROM Lecturas WHERE id = ?`, [id]);
+  } catch (error) {
+    throw error
+  }
+}

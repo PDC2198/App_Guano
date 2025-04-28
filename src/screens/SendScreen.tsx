@@ -5,18 +5,20 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { LecturaController } from "../controllers/LecturaController";
-import { LecturaRecord, ParamsLectura } from "../types";
+import { LecturaRecord, Pagination, ParamsLectura } from "../types";
 import ShowPicture from "../components/ShowPicture";
 import Toast from "react-native-toast-message";
 
 const SendScreen = () => {
+  const [recordsPerPage, setRecordsPerPage] = useState(25); //Total de páginas
+  const [page, setPage] = useState(1); //Página actual escogida por el usuario
 
-  const [recordsPerPage, setRecordsPerPage] = useState(25);
   const [statusFilter, setStatusFilter] = useState("todos");
   const [periodoFilter, setPeriodoFilter] = useState("todos");
   const [rutaFilter, setRutaFilter] = useState("todas");
@@ -26,32 +28,51 @@ const SendScreen = () => {
 
   const [lecturas, setLecturas] = useState<LecturaRecord[]>([]);
 
+  const [pagination, setPagination] = useState<Pagination>();
   const navigation = useNavigation();
 
   //Obtener lecturas de la DB
   const getLecturas = async () => {
     try {
-      
       //Definir el estado
-      let estado : boolean | undefined = false
+      let estado: boolean | undefined = false;
 
-      if(statusFilter === "todos") {
-        estado = undefined
+      if (statusFilter === "todos") {
+        estado = undefined;
       } else {
-        estado = statusFilter === "enviado" ? true : false
+        estado = statusFilter === "enviado" ? true : false;
       }
 
       //Funcionar la ruta
-      const ruta = rutaFilter === "todas" ? undefined : rutaFilter
+      const ruta = rutaFilter === "todas" ? undefined : rutaFilter;
 
       const response = await LecturaController.getAllLectura({
         ruta,
         estado,
+        page: page,
+        pageSize: recordsPerPage,
       });
-      
-      setLecturas(response);
+
+      setLecturas(response.lecturas);
+      setPagination(response.pagination);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  // Controlar next/previous
+  const nextOfPrevious = (type: "next" | "previous") => {
+    if (!pagination) return;
+    const { currentPage, totalPages } = pagination;
+
+    if (type === "next") {
+      if (currentPage < totalPages) {
+        setPage(currentPage + 1);
+      }
+    } else if (type === "previous") {
+      if (currentPage > 1) {
+        setPage(currentPage - 1);
+      }
     }
   };
 
@@ -76,10 +97,49 @@ const SendScreen = () => {
     setUriPhoto("");
   };
 
+  //Eliminar registro
+  const deleteLectura = async (id: LecturaRecord["id"]) => {
+    try {
+      Alert.alert(
+        "Confirmar acción",
+        "¿Estás seguro que quieres eliminar el registro?",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => console.log("Cancelado"),
+            style: "cancel",
+          },
+          {
+            text: "Aceptar",
+            onPress: async () => {
+              try {
+                await LecturaController.delete(id);
+                Toast.show({
+                  type: "success",
+                  text1: "Ok",
+                  text2: "Lectura eliminada correctamente",
+                });
+              getLecturas();
+              } catch (error) {
+                console.log(error)
+                Toast.show({
+                  type: "error",
+                  text1: "Error",
+                  text2: `Error en db: ${error}`,
+                });
+              }
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    getLecturas()
-  }, [statusFilter, rutaFilter]);
+    getLecturas();
+  }, [statusFilter, rutaFilter, recordsPerPage, page]);
 
   return (
     <>
@@ -97,12 +157,14 @@ const SendScreen = () => {
           <Text style={styles.headerTitle}>Sincronización</Text>
         </View>
 
-        <View style={{
-          display: "flex",
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center"
-        }}>
+        <View
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <TouchableOpacity
             style={styles.buttonExport}
             onPress={() => LecturaController.exportDatabase()}
@@ -165,7 +227,9 @@ const SendScreen = () => {
                   <Text style={styles.headerCell}>NÚMERO DE CUENTA</Text>
                   <Text style={styles.headerCell}>LECTURA (m³)</Text>
                   <Text style={styles.headerCell}>CONSUMO (m³)</Text>
-                  <Text style={[styles.headerCell, styles.columnSmall]}>FOTO</Text>
+                  <Text style={[styles.headerCell, styles.columnSmall]}>
+                    FOTO
+                  </Text>
                   <Text
                     style={[
                       styles.headerCell,
@@ -201,19 +265,28 @@ const SendScreen = () => {
                   </TouchableOpacity>
 
                   {/* ACCIÓN */}
-                  <View style={[styles.cell, styles.columnSmall, styles.actionContainer]}>
+                  <View
+                    style={[
+                      styles.cell,
+                      styles.columnSmall,
+                      styles.actionContainer,
+                    ]}
+                  >
                     <TouchableOpacity
                       style={styles.iconButton}
                       onPress={() => console.log(item)}
                     >
                       <Icon name="pencil" size={15} color="#ffffff" />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[styles.iconButton, styles.deleteButton]}
-                      onPress={() => console.log(item)}
-                    >
-                      <Icon name="trash-can" size={15} color="#ffffff" />
-                    </TouchableOpacity>
+
+                    {!item.estado && (
+                      <TouchableOpacity
+                        style={[styles.iconButton, styles.deleteButton]}
+                        onPress={() => deleteLectura(item.id)}
+                      >
+                        <Icon name="trash-can" size={15} color="#ffffff" />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
               )}
@@ -229,6 +302,7 @@ const SendScreen = () => {
                 mode="dropdown"
                 style={styles.footerPicker}
               >
+                <Picker.Item label="1" value={1} />
                 <Picker.Item label="25" value={25} />
                 <Picker.Item label="50" value={50} />
                 <Picker.Item label="75" value={75} />
@@ -236,21 +310,62 @@ const SendScreen = () => {
               </Picker>
             </View>
 
-            <TouchableOpacity style={styles.paginationButton}>
+            <TouchableOpacity
+              style={styles.paginationButton}
+              onPress={() => setPage(1)}
+            >
               <Text style={styles.paginationText}>⏮</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.paginationButton}>
+            <TouchableOpacity
+              style={styles.paginationButton}
+              onPress={() => nextOfPrevious("previous")}
+            >
               <Text style={styles.paginationText}>◀</Text>
             </TouchableOpacity>
 
-            <Text style={styles.paginationText}>( 1 de 1 )</Text>
+            <Text style={styles.paginationText}>
+              ( {`${pagination?.currentPage} de ${pagination?.totalPages}`} )
+            </Text>
 
-            <TouchableOpacity style={styles.paginationButton}>
+            <TouchableOpacity
+              style={styles.paginationButton}
+              onPress={() => nextOfPrevious("next")}
+            >
               <Text style={styles.paginationText}>▶</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.paginationButton}>
+            <TouchableOpacity
+              style={styles.paginationButton}
+              onPress={() => setPage(pagination?.totalPages || 1)}
+            >
               <Text style={styles.paginationText}>⏭</Text>
             </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              gap: 5,
+              marginTop: 10,
+              flexDirection: "row",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "bold",
+                color: "#155dfc",
+              }}
+            >
+              Total de registros:{" "}
+            </Text>
+            <Text
+              style={{
+                color: "#155dfc",
+              }}
+            >
+              {pagination?.totalItems}
+            </Text>
           </View>
         </View>
 
@@ -401,6 +516,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginRight: 8,
+    justifyContent: "center",
+    alignContent: "flex-start",
+    height: 45,
   },
   photoText: {
     color: "#fff",
@@ -480,31 +598,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 5,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   textExport: {
     textAlign: "center",
-    color: "#FFFFFF"
+    color: "#FFFFFF",
   },
   actionContainer: {
     display: "flex",
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
     gap: 6, // espacio entre íconos
   },
-  
+
   iconButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: "#3B82F6",
     padding: 6,
     borderRadius: 4,
     marginHorizontal: 2,
   },
-  
+
   deleteButton: {
-    backgroundColor: '#EF4444',
+    backgroundColor: "#EF4444",
   },
-  
 });
 
 export default SendScreen;
