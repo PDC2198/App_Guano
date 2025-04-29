@@ -1,19 +1,22 @@
+import { Picker } from "@react-native-picker/picker";
+import { RouteProp, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
+  Alert,
   FlatList,
   StyleSheet,
-  Alert,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { LecturaController } from "../controllers/LecturaController";
-import { LecturaRecord, Pagination, ParamsLectura } from "../types";
-import ShowPicture from "../components/ShowPicture";
 import Toast from "react-native-toast-message";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import ShowPicture from "../components/ShowPicture";
+import { LecturaController } from "../controllers/LecturaController";
+import { LecturaRecord, Pagination, RootStackParamList } from "../types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 const SendScreen = () => {
   const [recordsPerPage, setRecordsPerPage] = useState(25); //Cantidad de páginas
@@ -29,7 +32,7 @@ const SendScreen = () => {
   const [lecturas, setLecturas] = useState<LecturaRecord[]>([]);
 
   const [pagination, setPagination] = useState<Pagination>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<Navigation>();
 
   //Obtener lecturas de la DB
   const getLecturas = async () => {
@@ -274,7 +277,7 @@ const SendScreen = () => {
                   >
                     <TouchableOpacity
                       style={styles.iconButton}
-                      onPress={() => console.log(item)}
+                      onPress={() => navigation.navigate('EditReading', {id: item.id.toString()})}
                     >
                       <Icon name="pencil" size={15} color="#ffffff" />
                     </TouchableOpacity>

@@ -10,6 +10,7 @@ import AboutScreen from "./src/screens/AboutScreen";
 import SendScreen from "./src/screens/SendScreen";
 import Toast from "react-native-toast-message";
 import { RootStackParamList } from "./src/types";
+import EditReadingScreen from "./src/screens/EditReadingScreen";
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -24,6 +25,7 @@ export const App: React.FC = () => {
         <Stack.Screen name="Reading" component={ReadingScreen} />
         <Stack.Screen name="About" component={AboutScreen} />
         <Stack.Screen name="Send" component={SendScreen} />
+        <Stack.Screen name="EditReading" component={EditReadingScreen} />
       </Stack.Navigator>
       {/** Contendor del toast */}
       <Toast />

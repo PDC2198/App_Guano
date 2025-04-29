@@ -28,6 +28,7 @@ export type RootStackParamList = {
   Reading: undefined;
   About: undefined;
   Send: undefined;
+  EditReading: { id: string};
 };
 
 //Params de rutas

@@ -71,7 +71,7 @@ export const createLectura = async (lecturaData: LecturaT) => {
   }
 };
 
-// Obtener
+// Obtener todos
 export const getLectura = async ({ ruta, estado, page = 1, pageSize = 25 }: ParamsLectura) => {
   try {
     const db = await dbPromise;
@@ -135,6 +135,18 @@ export const getLectura = async ({ ruta, estado, page = 1, pageSize = 25 }: Para
     throw error;
   }
 };
+
+// Obtener Lectura por se id
+export const getLecturaById = async (id: LecturaRecord['id']) => {
+  try {
+    const db = await dbPromise
+    const sql = `SELECT * FROM Lecturas where id = ?`
+    const lectura = await db.getAllAsync<LecturaRecord>(sql, [id])
+    return lectura[0]
+  } catch(error) {
+    throw error
+  }
+}
 
 
 // Eliminar

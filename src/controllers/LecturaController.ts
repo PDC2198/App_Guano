@@ -14,6 +14,10 @@ export class LecturaController {
     return await LecturaModel.getLectura(params);
   }
 
+  static async getLecturaById(id: LecturaRecord['id']) {
+    return await LecturaModel.getLecturaById(id);
+  }
+
   static async exportDatabase() {
     const dbPath = `${FileSystem.documentDirectory}SQLite/AppGuano.db`;
     const newPath = `${FileSystem.cacheDirectory}AppGuano_export.db`;
