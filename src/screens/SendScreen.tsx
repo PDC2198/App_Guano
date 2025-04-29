@@ -122,9 +122,9 @@ const SendScreen = () => {
                   text1: "Ok",
                   text2: "Lectura eliminada correctamente",
                 });
-              getLecturas();
+                getLecturas();
               } catch (error) {
-                console.log(error)
+                console.log(error);
                 Toast.show({
                   type: "error",
                   text1: "Error",
@@ -275,12 +275,18 @@ const SendScreen = () => {
                       styles.actionContainer,
                     ]}
                   >
-                    <TouchableOpacity
-                      style={styles.iconButton}
-                      onPress={() => navigation.navigate('EditReading', {id: item.id.toString()})}
-                    >
-                      <Icon name="pencil" size={15} color="#ffffff" />
-                    </TouchableOpacity>
+                    {!item.estado && (
+                      <TouchableOpacity
+                        style={styles.iconButton}
+                        onPress={() =>
+                          navigation.navigate("EditReading", {
+                            id: item.id.toString(),
+                          })
+                        }
+                      >
+                        <Icon name="pencil" size={15} color="#ffffff" />
+                      </TouchableOpacity>
+                    )}
 
                     {!item.estado && (
                       <TouchableOpacity
