@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ImageBackground
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -149,15 +150,18 @@ const SendScreen = () => {
 
   return (
     <>
-      <View style={styles.container}>
+      <ImageBackground
+        source={require('../assets/fondoX.jpg')}
+        style={styles.background}
+        resizeMode="cover"
+      >
         {/* Botón de retroceso */}
         <View style={styles.headerContainer}>
-          {/* Botón de retroceso */}
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Icon name="menu-open" size={30} color="#fff" />
+            <Icon name="menu-open" size={30} color='#fff' />
           </TouchableOpacity>
           {/* Título centrado */}
           <Text style={styles.headerTitle}>Sincronización</Text>
@@ -356,31 +360,35 @@ const SendScreen = () => {
           <View
             style={{
               display: "flex",
-              justifyContent: "flex-start",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
               gap: 5,
               marginTop: 10,
-              flexDirection: "row",
+              width: "100%",
             }}
           >
             <Text
               style={{
                 fontSize: 15,
                 fontWeight: "bold",
-                color: "#155dfc",
+                color: "#000",
+                textAlign: "center",
+                textAlignVertical: "center",
               }}
             >
               Total de registros:{" "}
             </Text>
             <Text
               style={{
-                color: "#155dfc",
+                color: "#000",
               }}
             >
               {pagination?.totalItems}
             </Text>
           </View>
-        </View>
 
+        </View>
         {/* Botón ENVIAR */}
         <View
           style={{
@@ -388,7 +396,7 @@ const SendScreen = () => {
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            marginTop: 20,
+            marginTop: 10,
           }}
         >
           <TouchableOpacity
@@ -398,7 +406,7 @@ const SendScreen = () => {
             <Text style={styles.sendButtonText}>ENVIAR</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ImageBackground>
 
       <ShowPicture
         uriPhoto={uriPhoto}
@@ -412,228 +420,229 @@ const SendScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
-    paddingTop: 80, // Espacio para evitar solapamiento con el botón de retroceso
   },
-
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   // Botón de retroceso
   backButton: {
     position: "absolute",
-    left: 15,
-    backgroundColor: "#007BFF",
-    padding: 6,
+    top: 30,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: "#1D4ED8",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     borderRadius: 15,
+    shadowColor: "#1e3a8a",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 6,
   },
+  backButtonText: {
+    fontSize: 20,
+    color: "#ffffff",
+  },
+  // Encabezado
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-  },
-  backButtonText: {
-    fontSize: 22,
-    color: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 30,
+    fontSize: 40,
     fontWeight: "bold",
-    color: "black",
+    color: "#000",
+    marginTop: 30,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 2,
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 15,
-    paddingTop: 15,
+    paddingHorizontal: 16,
+    paddingTop: 10,
   },
-
-  // Estilos de los filtros
+  // Filtros
   filtersContainer: {
-    padding: 10,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 10, // Sombra en Android
-    marginBottom: 7,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
   },
   filterGroup: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
   filterLabel: {
     fontSize: 14,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 2,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 4,
   },
   picker: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#fff",
-    borderRadius: 5,
+    height: 48,
+    backgroundColor: "#e5e7eb",
+    borderRadius: 6,
+    paddingHorizontal: 8,
   },
-
   // Tabla
   tableContainer: {
-    flex: 0.9,
-    backgroundColor: "#fff",
+    flex: 1,
+    backgroundColor: "#ffffff",
     borderRadius: 10,
-    elevation: 10,
     overflow: "hidden",
+    elevation: 4,
   },
-
-  // Cabecera de la tabla
   tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#007BFF",
+    backgroundColor: "#1D4ED8",
     paddingVertical: 12,
-    paddingHorizontal: 5,
+    paddingHorizontal: 6,
   },
   headerCell: {
     flex: 1,
     textAlign: "center",
-    color: "#fff",
+    color: "#ffffff",
     fontWeight: "bold",
-    paddingVertical: 10,
-    borderRightWidth: 1, // Línea separadora entre columnas
-    borderRightColor: "#ccc",
+    fontSize: 14,
+    borderRightWidth: 2,
+    borderRightColor: "#60a5fa",
   },
   lastCell: {
-    borderRightWidth: 0, // Evita la línea en la última columna
+    borderRightWidth: 0,
   },
   columnSmall: {
     flex: 0.6,
   },
-
-  // Filas de la tabla
   tableRow: {
     flexDirection: "row",
-    borderBottomWidth: 2,
-    borderColor: "#ddd",
     paddingVertical: 10,
+    borderBottomWidth: 2,
+    borderColor: "#e5e7eb",
   },
   cell: {
     flex: 1,
     textAlign: "center",
     fontSize: 13,
-    color: "#333",
+    color: "#111827",
+    textAlignVertical: 'center',
+    alignItems: 'center'
   },
-
-  // Botón de foto
+  // Botones
   photoButton: {
-    flex: 0.2,
-    backgroundColor: "#28a745",
-    padding: 5,
-    borderRadius: 10,
-    alignItems: "center",
-    marginRight: 8,
+    backgroundColor: "#10b981",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
     justifyContent: "center",
-    alignContent: "flex-start",
+    alignItems: "center",
     height: 45,
+    marginRight: 8,
   },
   photoText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: "#ffffff",
+    fontWeight: "600",
+    fontSize: 16,
   },
-
-  // Botón ENVIAR
   sendButton: {
-    backgroundColor: "#28a745",
-    padding: 10,
-    marginTop: -30, // Separación respecto a la tabla
-    marginBottom: 50, // Reducimos el espacio inferior
-    borderRadius: 10,
+    backgroundColor: "#22c55e",
+    padding: 12,
+    borderRadius: 16,
     alignItems: "center",
-    elevation: 5,
+    elevation: 4,
     width: "50%",
+    alignSelf: "center",
+    marginTop: 5,
+    marginBottom: 30,
   },
   sendButtonText: {
-    color: "#fff",
-    fontSize: 15,
+    color: "#ffffff",
+    fontSize: 16,
     fontWeight: "bold",
   },
-  //PIE DE TABLA
+  // Pie de tabla
   footerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#007BFF",
-    paddingVertical: 5,
+    backgroundColor: "#1D4ED8",
+    paddingVertical: 8,
     borderRadius: 8,
   },
-
   footerPicker: {
     flex: 1,
-    backgroundColor: "#007BFF",
-    borderRadius: 5,
-    width: "100%",
     height: "100%",
-    color: "#000",
   },
-
   paginationButton: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     paddingVertical: 5,
-    marginHorizontal: 5,
+    marginHorizontal: 8,
   },
-
   paginationText: {
-    color: "#fff",
+    color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",
   },
   pickerWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    backgroundColor: "#007BFF",
-    width: 75, // Ajustado para mejor visibilidad
-    height: 25,
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+    borderRadius: 8,
+    backgroundColor: "#1D4ED8",
+    width: 80,
+    height: 30,
+    paddingHorizontal: 5,
   },
   selectedText: {
-    fontSize: 15,
-    marginRight: 5,
-    marginLeft: 10, // Espacio antes de la flecha
-    color: "#fff",
+    fontSize: 16,
+    color: "#ffffff",
     fontWeight: "bold",
+    marginRight: 6,
   },
+  // Exportar botón
   buttonExport: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: "#62748e",
-    width: "50%",
-    borderRadius: 10,
-    display: "flex",
+    paddingVertical: 8,
+    backgroundColor: "#64748b",
+    borderRadius: 16,
     flexDirection: "row",
-    gap: 5,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+    width: "40%",
+    alignSelf: "center",
   },
   textExport: {
-    textAlign: "center",
-    color: "#FFFFFF",
-  },
-  actionContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 6, // espacio entre íconos
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "600",
   },
 
+  // Contenedor de acciones
+  actionContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+  },
   iconButton: {
     backgroundColor: "#3B82F6",
-    padding: 6,
-    borderRadius: 4,
-    marginHorizontal: 2,
+    padding: 5,
+    borderRadius: 6,
   },
-
   deleteButton: {
     backgroundColor: "#EF4444",
   },
 });
+
 
 export default SendScreen;

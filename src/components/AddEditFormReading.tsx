@@ -6,7 +6,6 @@ import { Asset } from "expo-media-library";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Dimensions,
   Modal,
   StyleSheet,
   Text,
@@ -29,8 +28,6 @@ import {
   Ruta,
 } from "../types";
 import ShowPicture from "./ShowPicture";
-
-const { width } = Dimensions.get("window");
 
 type AddEditFormReadingProps = {
   navigation: NativeStackNavigationProp<
@@ -492,7 +489,7 @@ export default function AddEditFormReading({
               navigation.goBack();
             }}
           >
-            <Icon name="menu-open" size={30} color="#fff" />
+            <Icon name="menu-open" style={styles.menuButton} />
           </TouchableOpacity>
         )}
       </View>
@@ -569,7 +566,7 @@ export default function AddEditFormReading({
                     color="#fff"
                     style={styles.iconButton}
                   />
-                  <Text style={styles.arrowText}>GUARDAR</Text>
+                  <Text style={styles.saveButton}>GUARDAR</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -642,6 +639,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     paddingHorizontal: 10,
+    position: "absolute",
+    top: 30,
+    left: 20,
+    zIndex: 10,
   },
   backButton: {
     backgroundColor: "#1D4ED8",
@@ -711,7 +712,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 15,
-    marginHorizontal: 6,
+
     marginBottom: 24,
     borderRadius: 18,
     backgroundColor: "#f1f5f9",
@@ -767,33 +768,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 26,
-    gap: 14,
+    gap: 5,
+    padding: 15
   },
   photoButton: {
     backgroundColor: "#1e293b",
-    paddingVertical: 15,
-    borderRadius: 14,
+    borderRadius: 44,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   saveButton: {
     backgroundColor: "#16a34a",
-    paddingVertical: 15,
-    borderRadius: 14,
+    paddingVertical: 9,
+    borderRadius: 15,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#ffffff",
+    textAlign: 'center'    
   },
-
   arrowButton: {
     backgroundColor: "#2563eb",
-    paddingVertical: 15,
-    paddingHorizontal: 34,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
     borderRadius: 16,
     alignItems: "center",
-    marginTop: 30,
     alignSelf: "flex-end",
     flexDirection: "row",
     shadowColor: "#000",
@@ -805,15 +807,12 @@ const styles = StyleSheet.create({
   arrowText: {
     color: "#ffffff",
     fontWeight: "bold",
-    marginRight: 8,
-    fontSize: 16,
+    marginRight: 5,
   },
-
   closeButton: {
     flexDirection: "row",
     justifyContent: "center",
   },
-
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -836,18 +835,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     color: "#111827",
-    marginBottom: 12,
   },
   modalText: {
-    fontSize: 16,
-    marginVertical: 14,
+    fontSize: 18,
+    marginVertical: 10,
     textAlign: "center",
     color: "#475569",
   },
   modalButton: {
     backgroundColor: "#2563eb",
-    paddingVertical: 13,
-    paddingHorizontal: 34,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
     borderRadius: 14,
     marginTop: 18,
   },
@@ -856,9 +854,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-
   table: {
-    marginTop: 24,
+    marginTop: 10,
     borderWidth: 2,
     borderColor: "#d1d5db",
     borderRadius: 12,
@@ -868,7 +865,7 @@ const styles = StyleSheet.create({
   },
   tableRowHeader: {
     flexDirection: "row",
-    backgroundColor: "#1e3a8a",
+    backgroundColor: "#2563eb",
     paddingVertical: 16,
   },
   tableRow: {
@@ -906,7 +903,7 @@ const styles = StyleSheet.create({
 
   optionButton: {
     backgroundColor: "#22c55e",
-    paddingVertical: 9,
+    paddingVertical: 8,
     paddingHorizontal: 22,
     borderRadius: 12,
     marginHorizontal: 6,
@@ -916,8 +913,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
-
   iconButton: {
-    marginRight: 10,
+    marginRight: 0,
   },
+  menuButton: {
+    color: '#fff',
+    fontSize: 30,
+
+  }
 });

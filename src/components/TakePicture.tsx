@@ -40,7 +40,7 @@ export default function TakePicture({
     MediaLibrary.usePermissions(); //Galería
 
   const [facing, setFacing] = useState<CameraType>("back");
-  
+
   const cameraRef = useRef<CameraView>(null);
 
 
@@ -121,11 +121,11 @@ export default function TakePicture({
     <>
       {/* Botón para abrir la cámara */}
       <TouchableOpacity
-        style={[styles.photoButton, styles.arrowButton ]}
+        style={[styles.photoButton, styles.arrowButton]}
         onPress={() => setIsCameraVisible(true)}
       >
-        <Icon name="add-a-photo" size={20} color="#fff" style={styles.iconButton}/>
-        <Text style={styles.arrowText}>TOMAR FOTO</Text> 
+        <Icon name="add-a-photo" size={20} color="#fff" style={styles.iconButton} />
+        <Text style={styles.arrowText}>TOMAR FOTO</Text>
         {
           photo && (
             <Icon name="check" size={25} color={"white"} />
@@ -141,7 +141,7 @@ export default function TakePicture({
         animationType="slide"
       >
         <View style={styles.fullScreenContainer}>
-  
+
           {!photo ? (
             <CameraView
               ref={cameraRef}
@@ -190,14 +190,14 @@ export default function TakePicture({
 
                 onPress={() => deleteSavedPhoto()}
               >
-                 <Icon name="delete" size={30} color={"#c10007"} style={styles.trashButton}/>
+                <Icon name="delete" size={30} color={"#000"} style={styles.trashButton} />
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setIsCameraVisible(false)}
               >
-                <Icon name="cancel" size={30} color={"white"}/>
+                <Icon name="cancel" size={30} color={"white"} />
               </TouchableOpacity>
             </View>
           </View>
@@ -208,43 +208,58 @@ export default function TakePicture({
 }
 
 const styles = StyleSheet.create({
-  // Estilos para el botón de abrir cámara
+  // Botón para abrir la cámara
   takePhotoButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: "#1D4ED8", // Azul más moderno
     paddingVertical: 16,
-    borderRadius: 25,
+    paddingHorizontal: 20,
+    borderRadius: 30,
     alignItems: "center",
+    justifyContent: "center",
     marginVertical: 20,
-    color: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   icon: {
-    marginLeft: 8, // Espaciado entre el ícono y el texto
+    marginLeft: 8,
+  },
+  iconButton: {
+    marginRight: 10,
   },
   arrowButton: {
+    backgroundColor: "#1E293B",
     paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 20,
+    paddingHorizontal: 30,
+    borderRadius: 16,
     alignItems: "center",
     marginTop: 20,
     alignSelf: "flex-end",
     flexDirection: "row",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  arrowText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
   photoButton: {
-    backgroundColor: "#34495e",
-    marginRight: 10,
+    backgroundColor: "#1E40AF",
+    marginRight: 12,
     paddingVertical: 16,
     alignItems: "center",
     borderRadius: 20,
     flex: 1,
     justifyContent: "center",
   },
-  arrowText: {
-    color: "#fff",
-    fontWeight: "bold",
-    
-  },
 
-  // Estilos para la cámara full screen
+  // Cámara pantalla completa
   fullScreenContainer: {
     flex: 1,
     backgroundColor: "black",
@@ -261,7 +276,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   flipButton: {
-    padding: 10,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   flipText: {
     color: "white",
@@ -286,22 +303,21 @@ const styles = StyleSheet.create({
   closeButton: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     margin: 10,
   },
   trashButton: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "#DC2626",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     margin: 10,
   },
-  
   closeButtonText: {
     color: "white",
     fontSize: 16,
   },
 
-  // Estilos para permisos
+  // Permisos de cámara
   permissionContainer: {
     flex: 1,
     justifyContent: "center",
@@ -310,25 +326,27 @@ const styles = StyleSheet.create({
   },
   message: {
     textAlign: "center",
-    marginBottom: 10,
-    fontSize: 12,
-    color: "#e7000b",
-    backgroundColor: "#ffe2e2",
-    padding: 10,
-    borderRadius: 5
+    marginBottom: 12,
+    fontSize: 13,
+    color: "#B91C1C",
+    backgroundColor: "#FEE2E2",
+    padding: 12,
+    borderRadius: 8,
   },
   permissionButton: {
-    backgroundColor: "#007BFF",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%"
+    backgroundColor: "#1D4ED8",
+    padding: 12,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
   },
   permissionButtonText: {
     color: "white",
-    fontSize: 16
+    fontSize: 16,
+    fontWeight: "600",
   },
 
-  // Estilos para vista previa de foto
+  // Vista previa de foto
   photoPreview: {
     margin: 20,
     alignItems: "center",
@@ -336,8 +354,7 @@ const styles = StyleSheet.create({
   photoImage: {
     width: "100%",
     height: "100%",
+    borderRadius: 10,
   },
-  iconButton: {
-    marginRight: 10, // Espaciado entre el ícono y el texto
-  }
 });
+

@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "primer-app",
-    "slug": "appguano",
+    "name": "AgilGAD APP",
+    "slug": "appagiledeploy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logoApp.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -30,9 +30,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "82b57131-8567-4112-bfc5-9c6d8ace45f0"
+        "projectId": "635fe832-a102-41a9-8bc4-79afb1113448"
       }
     },
-    "owner": "ist14"
+    "owner": "pabloadc"
   }
 }

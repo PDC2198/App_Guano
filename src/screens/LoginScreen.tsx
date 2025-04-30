@@ -59,7 +59,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         <View style={styles.overlay} />
 
         <View style={styles.container}>
-          <Text style={styles.title}>Bienvenido</Text>
+          <Text style={styles.title}>Sistema de Gestión Municipal</Text>
           <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
 
           <View style={styles.inputGroup}>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   title: {
-    fontSize: 30,
+    fontSize: 31,
     color: '#fff',
     fontWeight: 'bold',
     marginBottom: 5,
