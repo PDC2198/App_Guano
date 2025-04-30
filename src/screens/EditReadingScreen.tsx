@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import AddEditFormReading from "../components/AddEditFormReading";
 import { LecturaController } from "../controllers/LecturaController";
 import { LecturaRecord, RootStackParamList } from "../types";
-import { ScrollView, StyleSheet, View, Text} from "react-native";
+import { ScrollView, StyleSheet, View, Text } from "react-native";
 
 type EditReadingScreenRouteProp = RouteProp<RootStackParamList, 'EditReading'>;
 type EditReading = NativeStackScreenProps<RootStackParamList>;
 
- const EditReadingScreen: React.FC<EditReading> = ({ navigation }) => {
+const EditReadingScreen: React.FC<EditReading> = ({ navigation }) => {
 
   const route = useRoute<EditReadingScreenRouteProp>();
   const { id } = route.params;
@@ -17,11 +17,11 @@ type EditReading = NativeStackScreenProps<RootStackParamList>;
 
   const getLecturaById = async () => {
     try {
-        const response = await LecturaController.getLecturaById(+id)
-        setLecturaDataEdit(response)
+      const response = await LecturaController.getLecturaById(+id)
+      setLecturaDataEdit(response)
 
     } catch (error) {
-        console.log(error)
+      console.log(error)
     }
   }
 
@@ -30,20 +30,20 @@ type EditReading = NativeStackScreenProps<RootStackParamList>;
   }, [id])
 
   return (
-   <ScrollView style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={{
-       display:"flex",
-       justifyContent:"center",
-       alignItems:"center",
-       width: "100%"
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%"
       }}>
-       <Text style={styles.title}>Editar Lectura</Text>
+        <Text style={styles.title}>Editar Lectura</Text>
       </View>
-       <AddEditFormReading 
-         navigation={navigation}
-         lecturaDataEdit={lecturaDataEdit}
-       />
-   </ScrollView>
+      <AddEditFormReading
+        navigation={navigation}
+        lecturaDataEdit={lecturaDataEdit}
+      />
+    </ScrollView>
   );
 };
 
