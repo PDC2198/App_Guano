@@ -72,6 +72,7 @@ export default function AddEditFormReading({
     formState: { errors },
     watch,
     setValue,
+    getValues
   } = useForm<LecturaFormInput>({
     defaultValues: {
       ruta: "",
@@ -111,25 +112,27 @@ export default function AddEditFormReading({
 
   // Dirige a la siguiente ruta
   const handlerNextRoute = () => {
-    const index = rutas.findIndex((rutas) => rutas.orden === rutaSelect?.orden); //Index
-    const lastElement = rutas.length - 1; //Último elemento
-
-    //Validar que exista
+    const index = rutas.findIndex((rutas) => rutas.orden === rutaSelect?.orden);
+    const lastElement = rutas.length - 1;
+  
     if (index === -1) return;
-
-    // Validar que no sea el último elemento
     if (index === lastElement) {
       setMessage("No hay más rutas disponibles");
       return;
     }
-
-    //Obtener el siguiente
+  
     const nextRoute = rutas[index + 1];
-    setRutaSelect(nextRoute);
-    setValue("lecturaInicial", nextRoute.lectura);
-    setValue("ordenLectura", nextRoute.orden.toString());
-    setValue("numeroCuenta", nextRoute.cuenta);
+    console.log("Siguiente ruta: ", nextRoute)
+    // Actualizar todo en un batch
+    setTimeout(() => {
+      setRutaSelect(nextRoute);
+      setValue("lecturaInicial", nextRoute.lectura, { shouldDirty: true });
+      setValue("ordenLectura", nextRoute.orden.toString(), { shouldDirty: true });
+      setValue("numeroCuenta", nextRoute.cuenta, { shouldDirty: true });
+    }, 0);
   };
+
+  console.log(getValues("ordenLectura"))
 
   const handleSave = async (data: LecturaFormInput) => {
     try {
