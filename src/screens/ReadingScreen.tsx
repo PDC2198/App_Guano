@@ -4,7 +4,7 @@ import { RootStackParamList } from "../types";
 import { ScrollView, StyleSheet, Text } from "react-native";
 import { View } from "react-native";
 
-type ReadingScreenProps = NativeStackScreenProps<RootStackParamList>;
+type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, 'Reading'>;
 
 const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
 

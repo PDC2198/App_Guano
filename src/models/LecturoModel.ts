@@ -1,5 +1,5 @@
 import dbPromise from "../database/sqlite";
-import { LecturaRecord, LecturaT, Pagination, ParamsLectura } from "../types";
+import { LecturaEdit, LecturaRecord, LecturaT, Pagination, ParamsLectura } from "../types";
 
 //Crear tabla
 export const initDatabase = async () => {
@@ -136,7 +136,7 @@ export const getLectura = async ({ ruta, estado, page = 1, pageSize = 25 }: Para
   }
 };
 
-// Obtener Lectura por se id
+// Obtener Lectura por su id
 export const getLecturaById = async (id: LecturaRecord['id']) => {
   try {
     const db = await dbPromise
@@ -148,6 +148,54 @@ export const getLecturaById = async (id: LecturaRecord['id']) => {
   }
 }
 
+//Editar
+export const updateLectura = async ({
+  id,
+  ordenLectura,
+  numeroCuenta,
+  lecturaActual,
+  fecha,
+  ruta,
+  consumo,
+  observacion,
+  foto
+}: LecturaEdit) => {
+  try {
+    const db = await dbPromise;
+
+    const sql = `
+      UPDATE Lecturas
+      SET 
+        ordenLectura = ?, 
+        numeroCuenta = ?, 
+        lecturaActual = ?, 
+        fecha = ?, 
+        ruta = ?, 
+        consumo = ?, 
+        observacion = ?, 
+        foto = ?, 
+        updatedAt = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `;
+
+    const params = [
+      ordenLectura,
+      numeroCuenta,
+      lecturaActual,
+      fecha,
+      ruta,
+      consumo,
+      observacion ?? null,
+      foto ?? null,
+      id // PK
+    ];
+
+    await db.runAsync(sql, params);
+    console.log(`Lectura con ID ${id} actualizada correctamente.`);
+  } catch (error) {
+    throw error;
+  }
+};
 
 // Eliminar
 export const deleteLectura = async (id: LecturaRecord['id']) => {

@@ -12,7 +12,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -21,18 +21,28 @@ import Spinner from "../components/Spinner";
 import TakePicture from "../components/TakePicture";
 import { LecturaController } from "../controllers/LecturaController";
 import { rutas } from "../data/rutas";
-import { LecturaFormInput, LecturaRecord, LecturaT, RootStackParamList, Ruta } from "../types";
+import {
+  LecturaFormInput,
+  LecturaRecord,
+  LecturaT,
+  RootStackParamList,
+  Ruta,
+} from "../types";
+import ShowPicture from "./ShowPicture";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 type AddEditFormReadingProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList>
-  lecturaDataEdit?: LecturaRecord
-}
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    "EditReading" | "Reading"
+  >;
+  lecturaDataEdit?: LecturaRecord;
+};
 
 export default function AddEditFormReading({
   navigation,
-  lecturaDataEdit
+  lecturaDataEdit,
 }: AddEditFormReadingProps) {
   const [selectedRoute, setSelectedRoute] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
@@ -48,6 +58,11 @@ export default function AddEditFormReading({
   const [photo, setPhoto] = useState<CameraCapturedPicture | undefined>(
     undefined
   );
+  const [isCameraVisible, setIsCameraVisible] = useState(false);
+
+  //Datos para editar la foto y moestrar en componente picture
+  const [photoUriEdit, setPhotoUriEdit] = useState(""); //URI para almacenar la foto si lo trae la api
+  const [isShowPictura, setIsShowPictura] = useState(false); //boolean para abrir/cerrar modal ShowPicture
 
   //Manejar la siguiente ruta
   const [rutaSelect, setRutaSelect] = useState<Ruta>();
@@ -123,8 +138,8 @@ export default function AddEditFormReading({
     try {
       setIsLoading(true);
 
-      let text1 = ''
-      let text2 = ''
+      let text1 = "";
+      let text2 = "";
 
       const dataSend: LecturaT = {
         numeroCuenta: data.numeroCuenta,
@@ -141,13 +156,17 @@ export default function AddEditFormReading({
 
       //Editando
       if (lecturaDataEdit) {
-        console.log("editando ...")
-        text1 = "Ok"
-        text2 = "Se edito correctamente la lectura"
+        await LecturaController.updateLectura({
+          ...dataSend,
+          id: lecturaDataEdit.id,
+        })
+        text1 = "Ok";
+        text2 = "Se edito correctamente la lectura";
       } else {
         await LecturaController.addlectura(dataSend);
-        text1 = "Ok"
-        text2 = "Se guardo la lectura"
+        text1 = "Ok";
+        text2 = "Se guardo la lectura";
+        handlerNextRoute(); //Lamar función para cargar la siguiente ruta
       }
 
       Toast.show({
@@ -160,7 +179,6 @@ export default function AddEditFormReading({
       setObservacion(""); //Resetear
       setPhotoGallery(undefined);
       setPhoto(undefined);
-      handlerNextRoute(); //Lamar función para cargar la siguiente ruta
 
     } catch (error) {
       console.log(error);
@@ -174,6 +192,15 @@ export default function AddEditFormReading({
     }
   };
 
+  //Resetear photoUriEdit para tomar una nueva foto
+  const resetUriPhoto = () => {
+    if(setPhotoUriEdit) {
+      setPhotoUriEdit('')
+      setIsShowPictura(false) //cerrar modal
+      setIsCameraVisible(true) //Abrir modal de la camara
+    }
+  }
+
   //UseEffect para calcular el consumo
   useEffect(() => {
     if (lecturaActual && lecturaInicial) {
@@ -185,15 +212,15 @@ export default function AddEditFormReading({
   //Llenar los datos al editar
   useEffect(() => {
     if (lecturaDataEdit) {
-
-      setValue("numeroCuenta", lecturaDataEdit.numeroCuenta.toString())
-      setValue("ruta", lecturaDataEdit.ruta)
-      setValue("ordenLectura", lecturaDataEdit.ordenLectura.toString())
-      setValue("lecturaActual", lecturaDataEdit.lecturaActual.toString())
-      setValue("consumo", lecturaDataEdit.consumo.toString())
-      setObservacion(observacion)
+      setValue("numeroCuenta", lecturaDataEdit.numeroCuenta.toString());
+      setValue("ruta", lecturaDataEdit.ruta);
+      setValue("ordenLectura", lecturaDataEdit.ordenLectura.toString());
+      setValue("lecturaActual", lecturaDataEdit.lecturaActual.toString());
+      setValue("consumo", lecturaDataEdit.consumo.toString());
+      setObservacion(observacion);
+      setPhotoUriEdit(lecturaDataEdit.foto || "");
     }
-  }, [lecturaDataEdit])
+  }, [lecturaDataEdit]);
 
   const sections = [
     <View key="section1" style={styles.form}>
@@ -206,7 +233,7 @@ export default function AddEditFormReading({
             onPress={() => setShowDatePicker(!showDatePicker)}
           >
             <Text style={styles.dateText}>
-              {date.toLocaleDateString('es-ES')}
+              {date.toLocaleDateString("es-ES")}
             </Text>
             <Icon name="calendar-month" size={20} color="#555" />
           </TouchableOpacity>
@@ -260,7 +287,6 @@ export default function AddEditFormReading({
           {errors?.ordenLectura?.message && (
             <MessageAlert message={errors.ordenLectura.message} type="error" />
           )}
-
         </View>
         <View style={styles.inputGroupRow}>
           <Text style={styles.inputLabel}>Número de cuenta:</Text>
@@ -456,26 +482,22 @@ export default function AddEditFormReading({
   ];
 
   return (
-
     <>
       <View style={styles.topBar}>
         {currentSection === 0 && ( // Mostrar botón solo en la sección 1
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => {
-              setMessage('')
-              navigation.goBack()
+              setMessage("");
+              navigation.goBack();
             }}
           >
             <Icon name="menu-open" size={30} color="#fff" />
           </TouchableOpacity>
         )}
-
       </View>
 
-      {message && (
-        <MessageAlert message={message} type="info" />
-      )}
+      {message && <MessageAlert message={message} type="info" />}
 
       {/* Contenido de la sección */}
       {typeof sections[currentSection] === "string" ? (
@@ -507,12 +529,31 @@ export default function AddEditFormReading({
 
         {currentSection === 0 && (
           <View style={styles.actionButtons}>
-            <TakePicture
-              setPhotoGallery={setPhotoGallery}
-              setPhoto={setPhoto}
-              photo={photo}
-              photoGallery={photoGallery}
-            />
+            {photoUriEdit ? (
+              <TouchableOpacity
+                style={[styles.photoButton, styles.arrowButton]}
+                onPress={() => setIsShowPictura(true)}
+              >
+                <Icon
+                  name="check"
+                  size={20}
+                  color="#fff"
+                  style={styles.iconButton}
+                />
+                <Text style={styles.arrowText}>VER FOTO</Text>
+                {photo && <Icon name="check" size={25} color={"white"} />}
+              </TouchableOpacity>
+            ) : (
+              <TakePicture
+                setPhotoGallery={setPhotoGallery}
+                setPhoto={setPhoto}
+                photo={photo}
+                photoGallery={photoGallery}
+                isCameraVisible={isCameraVisible}
+                setIsCameraVisible={setIsCameraVisible}
+              />
+            )}
+
             <TouchableOpacity
               style={[styles.arrowButton, styles.saveButton]}
               onPress={handleSubmit(handleSave)}
@@ -522,7 +563,12 @@ export default function AddEditFormReading({
                 <Spinner />
               ) : (
                 <>
-                  <Icon name="content-save" size={20} color="#fff" style={styles.iconButton} />
+                  <Icon
+                    name="content-save"
+                    size={20}
+                    color="#fff"
+                    style={styles.iconButton}
+                  />
                   <Text style={styles.arrowText}>GUARDAR</Text>
                 </>
               )}
@@ -574,6 +620,18 @@ export default function AddEditFormReading({
           </View>
         </View>
       </Modal>
+      
+      {
+        photoUriEdit && (       
+          <ShowPicture 
+            uriPhoto={photoUriEdit}
+            isShow={isShowPictura}
+            closeModal={() => setIsShowPictura(false)}
+            isEditOpen
+            resetUriPhoto={resetUriPhoto}
+          />
+        )
+      } 
     </>
   );
 }
@@ -863,6 +921,3 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
-
-
-

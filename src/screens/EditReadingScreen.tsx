@@ -7,7 +7,7 @@ import { LecturaRecord, RootStackParamList } from "../types";
 import { ScrollView, StyleSheet, View, Text } from "react-native";
 
 type EditReadingScreenRouteProp = RouteProp<RootStackParamList, 'EditReading'>;
-type EditReading = NativeStackScreenProps<RootStackParamList>;
+type EditReading = NativeStackScreenProps<RootStackParamList,'EditReading'>;
 
 const EditReadingScreen: React.FC<EditReading> = ({ navigation }) => {
 

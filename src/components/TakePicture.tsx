@@ -22,6 +22,8 @@ type TakePictureProps = {
   photo: CameraCapturedPicture | undefined
   setPhotoGallery: React.Dispatch<React.SetStateAction<MediaLibrary.Asset | undefined>>
   photoGallery: MediaLibrary.Asset | undefined
+  isCameraVisible: boolean
+  setIsCameraVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function TakePicture({
@@ -29,7 +31,8 @@ export default function TakePicture({
   photo,
   setPhoto,
   photoGallery,
-  
+  isCameraVisible,
+  setIsCameraVisible
 }: TakePictureProps) {
   //Permisos
   const [permission, requestPermission] = useCameraPermissions(); //Camara
@@ -37,7 +40,7 @@ export default function TakePicture({
     MediaLibrary.usePermissions(); //Galería
 
   const [facing, setFacing] = useState<CameraType>("back");
-  const [isCameraVisible, setIsCameraVisible] = useState(false);
+  
   const cameraRef = useRef<CameraView>(null);
 
 
@@ -124,7 +127,7 @@ export default function TakePicture({
         <Icon name="add-a-photo" size={20} color="#fff" style={styles.iconButton}/>
         <Text style={styles.arrowText}>TOMAR FOTO</Text> 
         {
-          photoGallery && (
+          photo && (
             <Icon name="check" size={25} color={"white"} />
           )
         }

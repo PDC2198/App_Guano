@@ -1,6 +1,7 @@
 import { Picker } from "@react-native-picker/picker";
-import { RouteProp, useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -14,11 +15,13 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ShowPicture from "../components/ShowPicture";
 import { LecturaController } from "../controllers/LecturaController";
 import { LecturaRecord, Pagination, RootStackParamList } from "../types";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useIsFocused } from '@react-navigation/native';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 const SendScreen = () => {
+
+  const isFocused = useIsFocused();
   const [recordsPerPage, setRecordsPerPage] = useState(25); //Cantidad de páginas
   const [page, setPage] = useState(1); //Página actual escogida por el usuario
 
@@ -142,7 +145,7 @@ const SendScreen = () => {
 
   useEffect(() => {
     getLecturas();
-  }, [statusFilter, rutaFilter, recordsPerPage, page]);
+  }, [statusFilter, rutaFilter, recordsPerPage, page, isFocused]);
 
   return (
     <>

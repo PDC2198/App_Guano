@@ -1,5 +1,5 @@
 import * as LecturaModel from "../models/LecturoModel";
-import { LecturaRecord, LecturaT, ParamsLectura } from "../types";
+import { LecturaEdit, LecturaRecord, LecturaT, ParamsLectura } from "../types";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import * as Sharing from 'expo-sharing';
@@ -17,6 +17,15 @@ export class LecturaController {
   static async getLecturaById(id: LecturaRecord['id']) {
     return await LecturaModel.getLecturaById(id);
   }
+
+  static async updateLectura(data : LecturaEdit) {
+    return await LecturaModel.updateLectura(data);
+  } 
+  
+  static async delete (id: LecturaRecord['id']) {
+    return await LecturaModel.deleteLectura(id);
+  }
+
 
   static async exportDatabase() {
     const dbPath = `${FileSystem.documentDirectory}SQLite/AppGuano.db`;
@@ -37,7 +46,4 @@ export class LecturaController {
     }
   }
 
-  static async delete (id: LecturaRecord['id']) {
-    return await LecturaModel.deleteLectura(id);
-  }
 }

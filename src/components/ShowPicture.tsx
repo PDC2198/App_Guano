@@ -1,16 +1,20 @@
-import { Image, View, Modal, StyleSheet, TouchableOpacity } from "react-native";
+import { Image, Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type ShowPictureProps = {
   uriPhoto: string;
   isShow: boolean;
   closeModal: () => void;
+  isEditOpen?: boolean; //boolean para saber si se abrio en pantalla de edición
+  resetUriPhoto?: () => void;
 };
 
 export default function ShowPicture({
   uriPhoto,
   isShow,
   closeModal,
+  isEditOpen,
+  resetUriPhoto,
 }: ShowPictureProps) {
   return (
     <Modal visible={isShow} transparent={false} animationType="slide">
@@ -28,12 +32,32 @@ export default function ShowPicture({
           width: "100%",
         }}
       >
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => closeModal()}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
         >
-          <Icon name="close" size={30} color={"white"} />
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => closeModal()}
+          >
+            <Icon name="close" size={30} color={"white"} />
+          </TouchableOpacity>
+
+          {isEditOpen && resetUriPhoto && (
+            <TouchableOpacity onPress={() => resetUriPhoto()}>
+              <Icon
+                name="delete"
+                size={30}
+                color={"#c10007"}
+                style={styles.trashButton}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </Modal>
   );
@@ -57,5 +81,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     margin: 10,
+  },
+  trashButton: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 5,
+    borderRadius: 5,
   },
 });

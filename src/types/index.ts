@@ -6,8 +6,11 @@ export type LecturaT = {
   lecturaActual: number;
   consumo: number;
   observacion?: string;
-  foto?: string;
-  
+  foto?: string; 
+}
+
+export type LecturaEdit = LecturaT & {
+  id: number
 }
 
 //Formulario de lectura

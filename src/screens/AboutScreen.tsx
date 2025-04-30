@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { RootStackParamList } from '../types';
 
 
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'About'>;
 
 const AboutScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     return (
