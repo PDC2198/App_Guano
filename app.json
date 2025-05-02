@@ -4,7 +4,7 @@
     "slug": "appagiledeploy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "/logoApp.png",
+    "icon": "./assets/logoApp.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
