@@ -9,7 +9,9 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ImageBackground
+  ImageBackground,
+  SafeAreaView,
+  StatusBar
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -150,263 +152,266 @@ const SendScreen = () => {
 
   return (
     <>
-      <ImageBackground
-        source={require('../assets/fondoX.jpg')}
-        style={styles.background}
-        resizeMode="cover"
-      >
-        {/* Botón de retroceso */}
-        <View style={styles.headerContainer}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Icon name="menu-open" size={30} color='#fff' />
-          </TouchableOpacity>
-          {/* Título centrado */}
-          <Text style={styles.headerTitle}>Sincronización</Text>
-        </View>
-
-        <View
-          style={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <ImageBackground
+          source={require('../assets/fondoX.jpg')}
+          style={styles.background}
+          resizeMode="cover"
         >
-          <TouchableOpacity
-            style={styles.buttonExport}
-            onPress={() => LecturaController.exportDatabase()}
+          {/* Botón de retroceso */}
+          <View style={styles.headerContainer}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Icon name="menu-open" size={30} color='#fff' />
+            </TouchableOpacity>
+            {/* Título centrado */}
+            <Text style={styles.headerTitle}>Sincronización</Text>
+          </View>
+
+          <View
+            style={{
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            <Text style={styles.textExport}>Exportar DB</Text>
-            <Icon name="download" size={25} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Contenedor principal */}
-        <View style={styles.contentContainer}>
-          {/* Filtros */}
-          <View style={styles.filtersContainer}>
-            {/* Filtro de RUTA */}
-            <Text style={styles.filterLabel}>RUTA:</Text>
-            <Picker
-              selectedValue={rutaFilter}
-              style={styles.picker}
-              onValueChange={(itemValue) => setRutaFilter(itemValue)}
+            <TouchableOpacity
+              style={styles.buttonExport}
+              onPress={() => LecturaController.exportDatabase()}
             >
-              <Picker.Item label="Todas" value="todas" />
-              <Picker.Item label="Ruta 1" value="1" />
-              <Picker.Item label="Ruta 2" value="2" />
-            </Picker>
-
-            {/* Filtro de PERIODO DE LECTURA */}
-            <Text style={styles.filterLabel}>PERIODO DE LECTURA:</Text>
-            <Picker
-              selectedValue={periodoFilter}
-              style={styles.picker}
-              onValueChange={(itemValue) => setPeriodoFilter(itemValue)}
-            >
-              <Picker.Item label="Todos" value="todos" />
-              <Picker.Item label="Enero 2025" value="enero_2025" />
-              <Picker.Item label="Febrero 2025" value="febrero_2025" />
-            </Picker>
-
-            {/* Filtro de ESTADO */}
-            <Text style={styles.filterLabel}>ESTADO:</Text>
-            <Picker
-              selectedValue={statusFilter}
-              style={styles.picker}
-              onValueChange={(itemValue) => setStatusFilter(itemValue)}
-            >
-              <Picker.Item label="Todos" value="todos" />
-              <Picker.Item label="Enviado" value="enviado" />
-              <Picker.Item label="No Enviado" value="no_enviado" />
-            </Picker>
+              <Text style={styles.textExport}>Exportar DB</Text>
+              <Icon name="download" size={25} color="#fff" />
+            </TouchableOpacity>
           </View>
-          {/* Tabla */}
-          <View style={styles.tableContainer}>
-            <FlatList
-              data={lecturas}
-              keyExtractor={(item) => item.id.toString()}
-              ListHeaderComponent={() => (
-                <View style={styles.tableHeader}>
-                  <Text style={[styles.headerCell, styles.columnSmall]}>
-                    ORDEN
-                  </Text>
-                  <Text style={styles.headerCell}>NÚMERO DE CUENTA</Text>
-                  <Text style={styles.headerCell}>LECTURA (m³)</Text>
-                  <Text style={styles.headerCell}>CONSUMO (m³)</Text>
-                  <Text style={[styles.headerCell, styles.columnSmall]}>
-                    FOTO
-                  </Text>
-                  <Text
-                    style={[
-                      styles.headerCell,
-                      styles.columnSmall,
-                      styles.lastCell,
-                    ]}
-                  >
-                    ACCIÓN
-                  </Text>
-                </View>
-              )}
-              renderItem={({ item }) => (
-                <View style={styles.tableRow}>
-                  <Text style={[styles.cell, styles.columnSmall]}>
-                    {item.id}
-                  </Text>
-                  <Text style={styles.cell}>{item.numeroCuenta}</Text>
-                  <Text style={styles.cell}>{item.lecturaActual}</Text>
-                  <Text style={styles.cell}>{item.consumo}</Text>
 
-                  {/* FOTO */}
-                  <TouchableOpacity
-                    style={styles.photoButton}
-                    onPress={() => openModal(item.foto)}
-                  >
-                    <Text style={styles.photoText}>
-                      {item.foto ? (
-                        "📷"
-                      ) : (
-                        <Icon name="image-off" size={15} color={"white"} />
-                      )}
-                    </Text>
-                  </TouchableOpacity>
-
-                  {/* ACCIÓN */}
-                  <View
-                    style={[
-                      styles.cell,
-                      styles.columnSmall,
-                      styles.actionContainer,
-                    ]}
-                  >
-                    {!item.estado && (
-                      <TouchableOpacity
-                        style={styles.iconButton}
-                        onPress={() =>
-                          navigation.navigate("EditReading", {
-                            id: item.id.toString(),
-                          })
-                        }
-                      >
-                        <Icon name="pencil" size={15} color="#ffffff" />
-                      </TouchableOpacity>
-                    )}
-
-                    {!item.estado && (
-                      <TouchableOpacity
-                        style={[styles.iconButton, styles.deleteButton]}
-                        onPress={() => deleteLectura(item.id)}
-                      >
-                        <Icon name="trash-can" size={15} color="#ffffff" />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </View>
-              )}
-            />
-          </View>
-          {/* Pie de tabla */}
-          <View style={styles.footerContainer}>
-            <View style={styles.pickerWrapper}>
-              <Text style={styles.selectedText}>{recordsPerPage}</Text>
+          {/* Contenedor principal */}
+          <View style={styles.contentContainer}>
+            {/* Filtros */}
+            <View style={styles.filtersContainer}>
+              {/* Filtro de RUTA */}
+              <Text style={styles.filterLabel}>RUTA:</Text>
               <Picker
-                selectedValue={recordsPerPage}
-                onValueChange={(itemValue) => setRecordsPerPage(itemValue)}
-                mode="dropdown"
-                style={styles.footerPicker}
+                selectedValue={rutaFilter}
+                style={styles.picker}
+                onValueChange={(itemValue) => setRutaFilter(itemValue)}
               >
-                <Picker.Item label="1" value={1} />
-                <Picker.Item label="25" value={25} />
-                <Picker.Item label="50" value={50} />
-                <Picker.Item label="75" value={75} />
-                <Picker.Item label="100" value={100} />
+                <Picker.Item label="Todas" value="todas" />
+                <Picker.Item label="Ruta 1" value="1" />
+                <Picker.Item label="Ruta 2" value="2" />
+              </Picker>
+
+              {/* Filtro de PERIODO DE LECTURA */}
+              <Text style={styles.filterLabel}>PERIODO DE LECTURA:</Text>
+              <Picker
+                selectedValue={periodoFilter}
+                style={styles.picker}
+                onValueChange={(itemValue) => setPeriodoFilter(itemValue)}
+              >
+                <Picker.Item label="Todos" value="todos" />
+                <Picker.Item label="Enero 2025" value="enero_2025" />
+                <Picker.Item label="Febrero 2025" value="febrero_2025" />
+              </Picker>
+
+              {/* Filtro de ESTADO */}
+              <Text style={styles.filterLabel}>ESTADO:</Text>
+              <Picker
+                selectedValue={statusFilter}
+                style={styles.picker}
+                onValueChange={(itemValue) => setStatusFilter(itemValue)}
+              >
+                <Picker.Item label="Todos" value="todos" />
+                <Picker.Item label="Enviado" value="enviado" />
+                <Picker.Item label="No Enviado" value="no_enviado" />
               </Picker>
             </View>
+            {/* Tabla */}
+            <View style={styles.tableContainer}>
+              <FlatList
+                data={lecturas}
+                keyExtractor={(item) => item.id.toString()}
+                ListHeaderComponent={() => (
+                  <View style={styles.tableHeader}>
+                    <Text style={[styles.headerCell, styles.columnSmall]}>
+                      ORDEN
+                    </Text>
+                    <Text style={styles.headerCell}>NÚMERO DE CUENTA</Text>
+                    <Text style={styles.headerCell}>LECTURA (m³)</Text>
+                    <Text style={styles.headerCell}>CONSUMO (m³)</Text>
+                    <Text style={[styles.headerCell, styles.columnSmall]}>
+                      FOTO
+                    </Text>
+                    <Text
+                      style={[
+                        styles.headerCell,
+                        styles.columnSmall,
+                        styles.lastCell,
+                      ]}
+                    >
+                      ACCIÓN
+                    </Text>
+                  </View>
+                )}
+                renderItem={({ item }) => (
+                  <View style={styles.tableRow}>
+                    <Text style={[styles.cell, styles.columnSmall]}>
+                      {item.id}
+                    </Text>
+                    <Text style={styles.cell}>{item.numeroCuenta}</Text>
+                    <Text style={styles.cell}>{item.lecturaActual}</Text>
+                    <Text style={styles.cell}>{item.consumo}</Text>
 
-            <TouchableOpacity
-              style={styles.paginationButton}
-              onPress={() => setPage(1)}
-            >
-              <Text style={styles.paginationText}>⏮</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.paginationButton}
-              onPress={() => nextOfPrevious("previous")}
-            >
-              <Text style={styles.paginationText}>◀</Text>
-            </TouchableOpacity>
+                    {/* FOTO */}
+                    <TouchableOpacity
+                      style={styles.photoButton}
+                      onPress={() => openModal(item.foto)}
+                    >
+                      <Text style={styles.photoText}>
+                        {item.foto ? (
+                          "📷"
+                        ) : (
+                          <Icon name="image-off" size={15} color={"white"} />
+                        )}
+                      </Text>
+                    </TouchableOpacity>
 
-            <Text style={styles.paginationText}>
-              ( {`${pagination?.currentPage} de ${pagination?.totalPages}`} )
-            </Text>
+                    {/* ACCIÓN */}
+                    <View
+                      style={[
+                        styles.cell,
+                        styles.columnSmall,
+                        styles.actionContainer,
+                      ]}
+                    >
+                      {!item.estado && (
+                        <TouchableOpacity
+                          style={styles.iconButton}
+                          onPress={() =>
+                            navigation.navigate("EditReading", {
+                              id: item.id.toString(),
+                            })
+                          }
+                        >
+                          <Icon name="pencil" size={15} color="#ffffff" />
+                        </TouchableOpacity>
+                      )}
 
-            <TouchableOpacity
-              style={styles.paginationButton}
-              onPress={() => nextOfPrevious("next")}
+                      {!item.estado && (
+                        <TouchableOpacity
+                          style={[styles.iconButton, styles.deleteButton]}
+                          onPress={() => deleteLectura(item.id)}
+                        >
+                          <Icon name="trash-can" size={15} color="#ffffff" />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </View>
+                )}
+              />
+            </View>
+            {/* Pie de tabla */}
+            <View style={styles.footerContainer}>
+              <View style={styles.pickerWrapper}>
+                <Text style={styles.selectedText}>{recordsPerPage}</Text>
+                <Picker
+                  selectedValue={recordsPerPage}
+                  onValueChange={(itemValue) => setRecordsPerPage(itemValue)}
+                  mode="dropdown"
+                  style={styles.footerPicker}
+                >
+                  <Picker.Item label="1" value={1} />
+                  <Picker.Item label="25" value={25} />
+                  <Picker.Item label="50" value={50} />
+                  <Picker.Item label="75" value={75} />
+                  <Picker.Item label="100" value={100} />
+                </Picker>
+              </View>
+
+              <TouchableOpacity
+                style={styles.paginationButton}
+                onPress={() => setPage(1)}
+              >
+                <Text style={styles.paginationText}>⏮</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.paginationButton}
+                onPress={() => nextOfPrevious("previous")}
+              >
+                <Text style={styles.paginationText}>◀</Text>
+              </TouchableOpacity>
+
+              <Text style={styles.paginationText}>
+                ( {`${pagination?.currentPage} de ${pagination?.totalPages}`} )
+              </Text>
+
+              <TouchableOpacity
+                style={styles.paginationButton}
+                onPress={() => nextOfPrevious("next")}
+              >
+                <Text style={styles.paginationText}>▶</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.paginationButton}
+                onPress={() => setPage(pagination?.totalPages || 1)}
+              >
+                <Text style={styles.paginationText}>⏭</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 5,
+                marginTop: 10,
+                width: "100%",
+              }}
             >
-              <Text style={styles.paginationText}>▶</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.paginationButton}
-              onPress={() => setPage(pagination?.totalPages || 1)}
-            >
-              <Text style={styles.paginationText}>⏭</Text>
-            </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "bold",
+                  color: "#000",
+                  textAlign: "center",
+                  textAlignVertical: "center",
+                }}
+              >
+                Total de registros:{" "}
+              </Text>
+              <Text
+                style={{
+                  color: "#000",
+                }}
+              >
+                {pagination?.totalItems}
+              </Text>
+            </View>
+
           </View>
-
+          {/* Botón ENVIAR */}
           <View
             style={{
               display: "flex",
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
-              gap: 5,
               marginTop: 10,
-              width: "100%",
             }}
           >
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: "bold",
-                color: "#000",
-                textAlign: "center",
-                textAlignVertical: "center",
-              }}
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={() => alert("Datos enviados con éxito")}
             >
-              Total de registros:{" "}
-            </Text>
-            <Text
-              style={{
-                color: "#000",
-              }}
-            >
-              {pagination?.totalItems}
-            </Text>
+              <Text style={styles.sendButtonText}>ENVIAR</Text>
+            </TouchableOpacity>
           </View>
-
-        </View>
-        {/* Botón ENVIAR */}
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 10,
-          }}
-        >
-          <TouchableOpacity
-            style={styles.sendButton}
-            onPress={() => alert("Datos enviados con éxito")}
-          >
-            <Text style={styles.sendButtonText}>ENVIAR</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+        </ImageBackground>
+      </SafeAreaView>
 
       <ShowPicture
         uriPhoto={uriPhoto}
@@ -418,6 +423,10 @@ const SendScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
   container: {
     flex: 1,
   },

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import AddEditFormReading from "../components/AddEditFormReading";
 import { LecturaController } from "../controllers/LecturaController";
 import { LecturaRecord, RootStackParamList } from "../types";
-import { ScrollView, StyleSheet, View, Text, ImageBackground } from "react-native";
+import { ScrollView, StyleSheet, View, Text, ImageBackground, SafeAreaView, StatusBar } from "react-native";
 
 type EditReadingScreenRouteProp = RouteProp<RootStackParamList, 'EditReading'>;
 type EditReading = NativeStackScreenProps<RootStackParamList, 'EditReading'>;
@@ -28,25 +28,32 @@ const EditReadingScreen: React.FC<EditReading> = ({ navigation }) => {
   }, [id]);
 
   return (
-    <ImageBackground
-      source={require("../assets/fondoX.jpg")} 
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Editar Lectura</Text>
-        </View>
-        <AddEditFormReading
-          navigation={navigation}
-          lecturaDataEdit={lecturaDataEdit}
-        />
-      </ScrollView>
-    </ImageBackground>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <ImageBackground
+        source={require("../assets/fondoX.jpg")}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Editar Lectura</Text>
+          </View>
+          <AddEditFormReading
+            navigation={navigation}
+            lecturaDataEdit={lecturaDataEdit}
+          />
+        </ScrollView>
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
   background: {
     flex: 1,
   },

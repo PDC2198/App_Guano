@@ -10,6 +10,8 @@ import {
   ImageBackground,
   ScrollView,
   useWindowDimensions,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -45,74 +47,81 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/fondoX.jpg')}
-      style={styles.backgroundImage}
-      imageStyle={{ resizeMode: 'cover' }}
-    >
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Text style={[styles.title, { fontSize: width * 0.07 }]}>App de toma de lecturas de agua potable</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <ImageBackground
+        source={require('../assets/fondoX.jpg')}
+        style={styles.backgroundImage}
+        imageStyle={{ resizeMode: 'cover' }}
+      >
+        <View style={styles.container}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <Text style={[styles.title, { fontSize: width * 0.07 }]}>App de toma de lecturas de agua potable</Text>
 
-          <View style={styles.importantButtons}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.mainCard,
-                { backgroundColor: '#1D4ED8' },
-                pressed && styles.pressed,
-              ]}
-              onPress={() => navigation.navigate('Reading')}
-            >
-              <Icon name="clipboard-text-outline" size={width * 0.1} color="#fff" />
-              <Text style={[styles.mainText, { fontSize: width * 0.05 }]}>TOMA DE LECTURA</Text>
-            </Pressable>
+            <View style={styles.importantButtons}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.mainCard,
+                  { backgroundColor: '#1D4ED8' },
+                  pressed && styles.pressed,
+                ]}
+                onPress={() => navigation.navigate('Reading')}
+              >
+                <Icon name="clipboard-text-outline" size={width * 0.1} color="#fff" />
+                <Text style={[styles.mainText, { fontSize: width * 0.05 }]}>TOMA DE LECTURA</Text>
+              </Pressable>
 
-            <Pressable
-              style={({ pressed }) => [
-                styles.mainCard,
-                { backgroundColor: '#047857' },
-                pressed && styles.pressed,
-              ]}
-              onPress={() => navigation.navigate('Send')}
-            >
-              <Icon name="cloud-upload-outline" size={width * 0.1} color="#fff" />
-              <Text style={[styles.mainText, { fontSize: width * 0.05 }]}>SINCRONIZAR APP</Text>
-            </Pressable>
-          </View>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.mainCard,
+                  { backgroundColor: '#047857' },
+                  pressed && styles.pressed,
+                ]}
+                onPress={() => navigation.navigate('Send')}
+              >
+                <Icon name="cloud-upload-outline" size={width * 0.1} color="#fff" />
+                <Text style={[styles.mainText, { fontSize: width * 0.05 }]}>SINCRONIZAR APP</Text>
+              </Pressable>
+            </View>
 
-          <View style={styles.secondaryButtons}>
-            <TouchableOpacity
-              style={styles.secondaryCard}
-              onPress={() => navigation.navigate('About')}
-            >
-              <Icon name="information-outline" size={28} color="#F59E0B" />
-              <Text style={styles.secondaryText}>ACERCA DE</Text>
-            </TouchableOpacity>
+            <View style={styles.secondaryButtons}>
+              <TouchableOpacity
+                style={styles.secondaryCard}
+                onPress={() => navigation.navigate('About')}
+              >
+                <Icon name="information-outline" size={28} color="#F59E0B" />
+                <Text style={styles.secondaryText}>ACERCA DE</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.secondaryCard} onPress={handleLogout}>
-              <Icon name="logout" size={28} color="#EF4444" />
-              <Text style={styles.secondaryText}>CERRAR SESIÓN</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.secondaryCard} onPress={handleLogout}>
+                <Icon name="logout" size={28} color="#EF4444" />
+                <Text style={styles.secondaryText}>CERRAR SESIÓN</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.secondaryCard} onPress={handleExit}>
-              <Icon name="exit-to-app" size={28} color="#8B5CF6" />
-              <Text style={styles.secondaryText}>SALIR</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+              <TouchableOpacity style={styles.secondaryCard} onPress={handleExit}>
+                <Icon name="exit-to-app" size={28} color="#8B5CF6" />
+                <Text style={styles.secondaryText}>SALIR</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
 
-        <View style={styles.footer}>
-          <View style={styles.footerContent}>
-            <Icon name="copyright" size={20} color={"#888"} />
-            <Text style={[styles.footerText, { fontSize: width * 0.035 }]}>Desarrollado por AgileDeploy S.A</Text>
+          <View style={styles.footer}>
+            <View style={styles.footerContent}>
+              <Icon name="copyright" size={20} color={"#888"} />
+              <Text style={[styles.footerText, { fontSize: width * 0.035 }]}>Desarrollado por AgileDeploy S.A</Text>
+            </View>
           </View>
         </View>
-      </View>
-    </ImageBackground>
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
   backgroundImage: {
     flex: 1,
     width: '100%',
