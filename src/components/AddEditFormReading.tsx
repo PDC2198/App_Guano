@@ -11,6 +11,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -41,6 +42,8 @@ export default function AddEditFormReading({
   navigation,
   lecturaDataEdit,
 }: AddEditFormReadingProps) {
+
+  const { width, height } = useWindowDimensions();
   const [selectedRoute, setSelectedRoute] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -523,7 +526,7 @@ export default function AddEditFormReading({
             onPress={() => setCurrentSection(currentSection + 1)}
           >
             <Text style={styles.arrowText}>DETALLES</Text>
-            <Icon name="arrow-right" size={30} color="#fff" />
+            <Icon name="arrow-right-bold" size={30} color="#fff" />
           </TouchableOpacity>
         )}
 

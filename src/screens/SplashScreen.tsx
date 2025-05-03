@@ -10,6 +10,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Spinner from '../components/Spinner';
 import { initDatabase } from '../models/LecturoModel';
+import { useWindowDimensions } from 'react-native';
+
 
 type RootStackParamList = {
     Splash: undefined;
@@ -20,6 +22,7 @@ type SplashScreenProps = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
     const [showButton, setShowButton] = useState(false);
+    const { width, height } = useWindowDimensions(); // 👈 dimensiones dinámicas
 
     const formatDate = (date: Date) => {
         const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
@@ -50,13 +53,23 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
             <ImageBackground
                 source={require('../assets/fondoGuano.jpg')}
-                style={styles.background}
+                style={[styles.background, { width, height }]} // 👈 full responsive
                 imageStyle={{ resizeMode: 'cover' }}
             >
                 <View style={styles.overlay} />
 
-                <View style={styles.container}>
-                    <Text style={styles.companyName}>
+                <View style={[
+                    styles.container,
+                    {
+                        width: width * 0.9, // 👈 90% del ancho
+                        paddingVertical: height * 0.05, // ajusta según alto
+                        paddingHorizontal: width * 0.06,
+                    }
+                ]}>
+                    <Text style={[
+                        styles.companyName,
+                        { fontSize: width < 350 ? 18 : 24 } // 👈 adapta tamaño fuente
+                    ]}>
                         GOBIERNO AUTÓNOMO DESCENTRALIZADO MUNICIPAL DEL CANTÓN GUANO
                     </Text>
 
@@ -73,19 +86,20 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
 
                 <Image
                     source={require('../assets/logoGuano.jpg')}
-                    style={styles.logoLeft}
+                    style={[styles.logoLeft, { width: width * 0.22, height: width * 0.22 }]} // 👈 ajusta proporcionalmente
                     resizeMode="contain"
                 />
 
                 <Image
                     source={require('../assets/logoAgil.jpg')}
-                    style={styles.logoRight}
+                    style={[styles.logoRight, { width: width * 0.22, height: width * 0.22 }]}
                     resizeMode="contain"
                 />
             </ImageBackground>
         </SafeAreaView>
     );
 };
+
 
 const styles = StyleSheet.create({
     safeArea: {
@@ -119,9 +133,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     date: {
-        fontSize: 16,
-        color: '#ccc',
-        marginBottom: 30,
+        fontSize: 15,
+        color: 'rgba(255,255,255,0.8)',
+        marginBottom: 20,
+        fontStyle: 'italic',
     },
     loader: {
         marginTop: 20,

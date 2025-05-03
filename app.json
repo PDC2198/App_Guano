@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash-iconAgile.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,10 +17,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-iconAgile.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ist14.appguano"
+      "package": "com.pabloadc.appagiledeploy"
     },
     "web": {
       "favicon": "./assets/favicon.png"

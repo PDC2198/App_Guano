@@ -1,13 +1,14 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Image, useWindowDimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { RootStackParamList } from '../types';
-
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'About'>;
 
 const AboutScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+    const { width, height } = useWindowDimensions(); // Hook para obtener dimensiones de la ventana
+
     return (
         <ImageBackground
             source={require('../assets/fondoX.jpg')}
@@ -23,12 +24,12 @@ const AboutScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     >
                         <Icon name="menu-open" size={26} color="#fff" />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Acerca de</Text>
+                    <Text style={[styles.title, { fontSize: width * 0.08 }]}>Acerca de</Text>
                 </View>
 
                 {/* Cuerpo de la pantalla */}
                 <View style={styles.content}>
-                    <Text style={styles.sectionTitle}>¿Quiénes somos?</Text>
+                    <Text style={[styles.sectionTitle, { fontSize: width * 0.05 }]}>¿Quiénes somos?</Text>
                     {[
                         'Tenemos la experiencia, respaldo y know-how necesario para enfrentar grandes proyectos municipales.',
                         'Contamos con el aval de profesionales de amplia trayectoria.',
@@ -36,25 +37,25 @@ const AboutScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                         'Nos adaptamos a las necesidades reales de nuestros clientes.',
                         'Somos versátiles, honestos, y apasionados por hacer las cosas bien.'
                     ].map((item, index) => (
-                        <Text key={index} style={styles.paragraph}>
+                        <Text key={index} style={[styles.paragraph, { fontSize: width * 0.040 }]}>
                             {'\u2022'} {item}
                         </Text>
                     ))}
 
-                    <Text style={styles.sectionTitle}>Contáctanos</Text>
-                    <Text style={styles.paragraph}>📍 Dirección: Iñaquito, Quito – Ecuador</Text>
-                    <Text style={styles.paragraph}>📞 Teléfonos: 0995979050 / 0985537862</Text>
-                    <Text style={styles.paragraph}>📧 E-mail: agiledeploy@gmail.com</Text>
+                    <Text style={[styles.sectionTitle, { fontSize: width * 0.05 }]}>Contáctanos</Text>
+                    <Text style={[styles.paragraph, { fontSize: width * 0.040 }]}>📍 Dirección: Iñaquito, Quito – Ecuador</Text>
+                    <Text style={[styles.paragraph, { fontSize: width * 0.040 }]}>📞 Teléfonos: 0995979050 / 0985537862</Text>
+                    <Text style={[styles.paragraph, { fontSize: width * 0.040 }]}>📧 E-mail: agiledeploy@gmail.com</Text>
 
-                    <Text style={styles.sectionTitle}>Eslogan</Text>
-                    <Text style={styles.slogan}>
+                    <Text style={[styles.sectionTitle, { fontSize: width * 0.05 }]}>Eslogan</Text>
+                    <Text style={[styles.slogan, { fontSize: width * 0.04 }]}>
                         “Hazlo fácil,{'\n'}Desarrollo de soluciones tecnológicas.”
                     </Text>
                     <Image
                         source={require('../assets/logoAgil.jpg')}
-                        style={styles.logo}
+                        style={[styles.logo, { width: width * 0.4, height: height * 0.1 }]}
                     />
-                    <Text style={styles.version}>Versión 1.0.0</Text>
+                    <Text style={[styles.version, { fontSize: width * 0.04 }]}>Versión 1.0.0</Text>
                 </View>
             </ScrollView>
         </ImageBackground>
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flexGrow: 1,
-        paddingHorizontal: 24,
+        paddingHorizontal: '5%',
         paddingTop: 60,
         paddingBottom: 40,
     },
@@ -79,18 +80,15 @@ const styles = StyleSheet.create({
     backButton: {
         backgroundColor: '#1D4ED8',
         padding: 10,
-        borderRadius: 30,
+        borderRadius: 16,
         elevation: 4,
     },
     title: {
-        fontSize: 28,
         fontWeight: 'bold',
         marginLeft: 20,
         color: '#000',
-        //textShadowColor: '#000',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 2,
-
     },
     content: {
         backgroundColor: 'rgba(255, 255, 255, 0.85)',
@@ -102,41 +100,34 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     sectionTitle: {
-        fontSize: 22,
         fontWeight: '700',
         color: '#1D4ED8',
         marginBottom: 16,
         marginTop: 10,
     },
     paragraph: {
-        fontSize: 16,
         color: '#1E293B',
         lineHeight: 26,
         marginBottom: 12,
     },
     slogan: {
-        fontSize: 18,
         fontStyle: 'italic',
         color: '#0F172A',
         textAlign: 'center',
         lineHeight: 28,
     },
     version: {
-        fontSize: 15,
         color: '#64748B',
         textAlign: 'center',
-        marginTop: 50,
+        marginTop: 20,
         fontWeight: '700',
     },
     logo: {
-        width: 300,
-        height: 80,
         resizeMode: 'contain',
         alignSelf: 'center',
-        marginTop: 20,
+        marginTop: 10,
         marginBottom: 10,
     },
-
 });
 
 export default AboutScreen;

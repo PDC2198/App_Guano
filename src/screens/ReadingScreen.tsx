@@ -1,11 +1,13 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import AddEditFormReading from "../components/AddEditFormReading";
 import { RootStackParamList } from "../types";
-import { ScrollView, StyleSheet, Text, View, ImageBackground } from "react-native";
+import { ScrollView, StyleSheet, Text, View, ImageBackground, useWindowDimensions } from "react-native";
 
 type ReadingScreenProps = NativeStackScreenProps<RootStackParamList, 'Reading'>;
 
 const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
+  const { width, height } = useWindowDimensions(); // Hook de dimensiones de la ventana
+
   return (
     <ImageBackground
       source={require('../assets/fondoX.jpg')}
@@ -14,7 +16,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
     >
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Agregar Lectura</Text>
+          <Text style={[styles.title, { fontSize: width * 0.1 }]}>Agregar Lectura</Text>
         </View>
         <AddEditFormReading navigation={navigation} />
       </ScrollView>
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontSize: 40,
     fontWeight: "bold",
     color: "#000",
     marginTop: 30,

@@ -89,7 +89,7 @@ const SendScreen = () => {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "No hay foto para mostrar",
+        text2: "Imagen no disponible.",
       });
       return;
     }
@@ -132,7 +132,7 @@ const SendScreen = () => {
                 Toast.show({
                   type: "error",
                   text1: "Error",
-                  text2: `Error en db: ${error}`,
+                  text2: `Error en DB: ${error}`,
                 });
               }
             },
@@ -455,10 +455,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 40,
+    fontSize: 50,
     fontWeight: "bold",
     color: "#000",
-    marginTop: 30,
+    marginTop: 20,
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 2,
@@ -643,6 +643,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#EF4444",
   },
 });
-
 
 export default SendScreen;
