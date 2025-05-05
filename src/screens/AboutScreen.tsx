@@ -11,7 +11,7 @@ const AboutScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+            <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent/>
 
             <ImageBackground
                 source={require('../assets/fondoX.jpg')}
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         paddingHorizontal: '5%',
-        paddingTop: 60,
+        paddingTop: 70,
         paddingBottom: 40,
     },
     topBar: {

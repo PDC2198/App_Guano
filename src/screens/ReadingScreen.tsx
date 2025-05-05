@@ -10,7 +10,7 @@ const ReadingScreen: React.FC<ReadingScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent/>
       <ImageBackground
         source={require('../assets/fondoX.jpg')}
         resizeMode="cover"
@@ -41,12 +41,12 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   title: {
     fontWeight: "bold",
     color: "#000",
-    marginTop: 30,
+    marginTop: 60,
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 2,

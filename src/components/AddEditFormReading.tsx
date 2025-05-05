@@ -117,13 +117,13 @@ export default function AddEditFormReading({
   const handlerNextRoute = () => {
     const index = rutas.findIndex((rutas) => rutas.orden === rutaSelect?.orden);
     const lastElement = rutas.length - 1;
-  
+
     if (index === -1) return;
     if (index === lastElement) {
       setMessage("No hay más rutas disponibles");
       return;
     }
-  
+
     const nextRoute = rutas[index + 1];
     console.log("Siguiente ruta: ", nextRoute)
     // Actualizar todo en un batch
@@ -197,7 +197,7 @@ export default function AddEditFormReading({
 
   //Resetear photoUriEdit para tomar una nueva foto
   const resetUriPhoto = () => {
-    if(setPhotoUriEdit) {
+    if (setPhotoUriEdit) {
       setPhotoUriEdit('')
       setIsShowPictura(false) //cerrar modal
       setIsCameraVisible(true) //Abrir modal de la camara
@@ -623,10 +623,10 @@ export default function AddEditFormReading({
           </View>
         </View>
       </Modal>
-      
+
       {
-        photoUriEdit && (       
-          <ShowPicture 
+        photoUriEdit && (
+          <ShowPicture
             uriPhoto={photoUriEdit}
             isShow={isShowPictura}
             closeModal={() => setIsShowPictura(false)}
@@ -634,7 +634,7 @@ export default function AddEditFormReading({
             resetUriPhoto={resetUriPhoto}
           />
         )
-      } 
+      }
     </>
   );
 }
@@ -662,6 +662,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 6,
     elevation: 6,
+    marginVertical: 35,
+    right: 10,
+
   },
   form: {
     marginTop: 10,
@@ -794,7 +797,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#ffffff",
-    textAlign: 'center'    
+    textAlign: 'center'
   },
   arrowButton: {
     backgroundColor: "#2563eb",

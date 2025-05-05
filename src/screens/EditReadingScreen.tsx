@@ -29,7 +29,7 @@ const EditReadingScreen: React.FC<EditReading> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent/>
       <ImageBackground
         source={require("../assets/fondoX.jpg")}
         style={styles.background}
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: "#000",
-    marginTop: 30,
+    marginTop: 60,
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 2,

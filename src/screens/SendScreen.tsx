@@ -153,7 +153,7 @@ const SendScreen = () => {
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent/>
         <ImageBackground
           source={require('../assets/fondoX.jpg')}
           style={styles.background}
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
   // Botón de retroceso
   backButton: {
     position: "absolute",
-    top: 30,
+    top: 60,
     left: 20,
     zIndex: 10,
     backgroundColor: "#1D4ED8",
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: "bold",
     color: "#000",
-    marginTop: 20,
+    marginTop: 45,
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 2,
